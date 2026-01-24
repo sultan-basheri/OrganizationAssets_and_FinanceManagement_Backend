@@ -1,0 +1,6 @@
+@OrganizationAssets_and_FinanceManagement_HostAddress = http://localhost:5260
+
+GET {{OrganizationAssets_and_FinanceManagement_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

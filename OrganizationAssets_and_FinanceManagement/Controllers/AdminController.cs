@@ -69,11 +69,15 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-        [HttpPut]
+        [HttpPut("{Id:int}")]
         public async Task<IActionResult> changeProfile(int Id, Admin admin)
         {
             try
             {
+                if(Id != admin.Id)
+                {
+                    return BadRequest("Id Mismatch");
+                }
                 var result = await _admin.changeProfile(Id, admin);
                 return Ok(result);
             }

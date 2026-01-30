@@ -97,21 +97,29 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.AdminMaster.Where(x => (x.ContactNo == authentication.userName || x.Email == authentication.userName) && x.Password == authentication.password)
-                .Select(z => new Admin
-                {
-                    Id = z.Id,
-                    FullName = z.FullName,
-                    Email = z.Email,
-                }).FirstOrDefaultAsync();
+                var admin = await _context.AdminMaster.FirstOrDefaultAsync(x =>x.Email == authentication.userName || x.ContactNo == authentication.userName);
 
-                if (result == null)
+                if (admin == null)
                 {
-                    return new ResponseResult("Fail", "Wrong username or Password");
+                    return new ResponseResult("Fail", "Not Exist");
                 }
+                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(
+                    authentication.password,
+                    admin.Password   // hashed password from DB
+                );
+
+                if (!isPasswordValid)
+                {
+                    return new ResponseResult("Fail", "Wrong username or password");
+                }
+                var result = new Admin
+                {
+                    Id = admin.Id,
+                    FullName = admin.FullName,
+                    Email = admin.Email
+                };
 
                 return new ResponseResult("OK", result);
-
             }
             catch (Exception exp)
             {
@@ -159,38 +167,45 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                List<string> error = new List<string>();
-                var data = await _context.AdminMaster.ToListAsync();
+                List<string> errors = new List<string>();
 
-                if (data.Any(o => o.Email == admin.Email && o.Id != Id))
+                var existing = await _context.AdminMaster
+                    .FirstOrDefaultAsync(x => x.Id == Id);
+
+                if (existing == null)
+                    return new ResponseResult("Fail", "Admin not found");
+
+                if (await _context.AdminMaster
+                    .AnyAsync(x => x.Email == admin.Email && x.Id != Id))
                 {
-                    error.Add("Email is Already Exist");
-                }
-                if (data.Any(o => o.ContactNo == admin.ContactNo && o.Id != Id))
-                {
-                    error.Add("ContactNo Is Already Exist");
-                }
-                if (error.Count == 0)
-                {
-                    var result = await _context.AdminMaster.FirstOrDefaultAsync(x => x.Id == admin.Id);
-                    if (result != null)
-                    {
-                        result.FullName = admin.FullName;
-                        result.Email = admin.Email;
-                        result.ContactNo = admin.ContactNo;
-                        await _context.SaveChangesAsync();
-                        return new ResponseResult("Ok", "Update Successful");
-                    }
+                    errors.Add("Email already exists");
                 }
 
-                return new ResponseResult("Fail", string.Join(",", error, "Not Exist"));
+                if (await _context.AdminMaster
+                    .AnyAsync(x => x.ContactNo == admin.ContactNo && x.Id != Id))
+                {
+                    errors.Add("Contact number already exists");
+                }
+
+                if (errors.Count > 0)
+                {
+                    return new ResponseResult("Fail", string.Join(" | ", errors));
+                }
+
+                // ✅ update
+                existing.FullName = admin.FullName;
+                existing.Email = admin.Email;
+                existing.ContactNo = admin.ContactNo;
+
+                await _context.SaveChangesAsync();
+
+                return new ResponseResult("Ok", "Update successful");
             }
             catch (Exception exp)
             {
                 return new ResponseResult("Fail", exp.Message);
             }
         }
-
         public async Task<ResponseResult> deactivateAdmin(int Id)
         {
             try

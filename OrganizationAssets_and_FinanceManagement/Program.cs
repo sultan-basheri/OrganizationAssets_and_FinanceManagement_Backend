@@ -12,7 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddDBService();
 
 builder.Services.AddScoped<IAdmin, ManageAdmin>();
-
+builder.Services.AddScoped<IOrganization, ManageOrganization>();
+builder.Services.AddScoped<IMember, ManageMember>();
+builder.Services.AddScoped<IMosque, ManageMosque>();
+builder.Services.AddScoped<IOfficeStaff, ManageOfficeStaff>();
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

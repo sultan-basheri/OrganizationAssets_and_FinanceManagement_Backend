@@ -7,6 +7,10 @@ namespace BusinessLayer.Model
 {
     public class Mosque
     {
+        public Mosque()
+        {
+            EnrollStaffMosque = new HashSet<Staff>();
+        }
         public int Id { get; set; }
 
         // Navigation Property
@@ -34,14 +38,11 @@ namespace BusinessLayer.Model
         [Phone(ErrorMessage = "Invalid Contact number")]
         [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Contact number must be 10 digits")]
         public string ContactNo { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Established Date is required")]
-        public DateOnly EstablishedDate { get; set; }
-
-        [Required(ErrorMessage = "Hijri Established date is required")]
+        public DateOnly EstablishedDate { get; set; } 
         public DateOnly Established_Hijri { get; set; }
 
         [Required(ErrorMessage = "Mosque type is required")]
         public string MosqueType { get; set; } = string.Empty;
+        public ICollection<Staff> EnrollStaffMosque { get; set; }
     }
 }

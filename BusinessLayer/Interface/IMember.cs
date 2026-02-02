@@ -7,11 +7,12 @@ namespace BusinessLayer.Interface
 {
     public interface IMember
     {
-        public Task<ResponseResult> GetList();
-        public Task<ResponseResult> GetMemberList();
-        public Task<ResponseResult> GetMemberById(int Id);
-        public Task<ResponseResult> AddMember(Member member);
-        public Task<ResponseResult> UpdateMember(Member member);
-        public Task<ResponseResult> DeleteMember(int Id);
+        public Task<ResponseResult> memberAuthentication(Authentication authentication);
+        public Task<ResponseResult> changeProfile(int Id, Member member);
+        public Task<ResponseResult> getMemberList();
+        public Task<ResponseResult> memberProfile(int Id);
+        public Task<ResponseResult> signUpMember(Member member);
+        public Task<ResponseResult> deactivateMember(int Id);
+        public Task<ResponseResult> updatePassword(Authentication authentication);
     }
 }

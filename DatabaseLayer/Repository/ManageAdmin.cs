@@ -24,6 +24,10 @@ namespace DatabaseLayer.Repository
         {
             try
             {
+                if(admin == null)
+                {
+                    return new ResponseResult("Fail", "Please Fill All Fields");
+                }
                 List<string> error = new List<string>();
                 var data = await _context.AdminMaster.ToListAsync();
 
@@ -84,7 +88,7 @@ namespace DatabaseLayer.Repository
                     smtp.Send(mail);
                     var result = await _context.AdminMaster.AddAsync(admin);
                     _context.SaveChanges();
-                    return new ResponseResult("Ok", "Successfully Saved");
+                    return new ResponseResult("OK", "Successfully Saved");
                 }
                 return new ResponseResult("Fail", string.Join(",", error));
             }
@@ -97,7 +101,7 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var admin = await _context.AdminMaster.FirstOrDefaultAsync(x =>x.Email == authentication.userName || x.ContactNo == authentication.userName);
+                var admin = await _context.AdminMaster.FirstOrDefaultAsync(x =>x.Email == authentication.userName    || x.ContactNo == authentication.userName);
 
                 if (admin == null)
                 {
@@ -156,7 +160,11 @@ namespace DatabaseLayer.Repository
                     o.CreatedAt,
                     o.Status
                 }).ToListAsync();
-                return new ResponseResult("Ok", result);
+                if(result == null)
+                {
+                    return new ResponseResult("Fail", "Empty");
+                }
+                return new ResponseResult("OK", result);
             }
             catch (Exception exp)
             {
@@ -169,8 +177,7 @@ namespace DatabaseLayer.Repository
             {
                 List<string> errors = new List<string>();
 
-                var existing = await _context.AdminMaster
-                    .FirstOrDefaultAsync(x => x.Id == Id);
+                var existing = await _context.AdminMaster.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (existing == null)
                     return new ResponseResult("Fail", "Admin not found");
@@ -199,7 +206,7 @@ namespace DatabaseLayer.Repository
 
                 await _context.SaveChangesAsync();
 
-                return new ResponseResult("Ok", "Update successful");
+                return new ResponseResult("OK", "Update successful");
             }
             catch (Exception exp)
             {
@@ -213,13 +220,13 @@ namespace DatabaseLayer.Repository
                 var admin = await _context.AdminMaster.FirstOrDefaultAsync(x => x.Id == Id);
                 if (admin == null)
                 {
-                    return new ResponseResult("Fail", "Not Found");
+                    return new ResponseResult("Fail", $"Admin Id = {Id} Is Not Found");
                 }
 
                 admin.Status = "De-Activate";
                 _context.AdminMaster.Update(admin);
                 await _context.SaveChangesAsync();
-                return new ResponseResult("Ok", "Successfully Saved");
+                return new ResponseResult("OK", "Successfully Saved");
             }
             catch (Exception exp)
             {
@@ -245,7 +252,7 @@ namespace DatabaseLayer.Repository
 
                 _context.AdminMaster.Update(result);
                 await _context.SaveChangesAsync();
-                return new ResponseResult("Ok", "Password Update Successfully");
+                return new ResponseResult("OK", "Password Update Successfully");
             }
             catch (Exception exp)
             {

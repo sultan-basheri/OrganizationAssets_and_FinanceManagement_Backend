@@ -2,26 +2,25 @@
 using BusinessLayer.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OrganizationAssets_and_FinanceManagement.Repositories;
 
 namespace OrganizationAssets_and_FinanceManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MemberController : ControllerBase
+    public class OfficeStaffController : ControllerBase
     {
-        private readonly IMember _member;
-        public MemberController(IMember member)
+        private readonly IOfficeStaff _officeStaff;
+        public OfficeStaffController(IOfficeStaff officeStaff)
         {
-            _member = member;
+            _officeStaff = officeStaff;
         }
         [HttpGet]
-        public async Task<IActionResult> getMemberList()
+        public async Task<IActionResult> getOfficeStaffList()
         {
             try
             {
-                var result = await _member.getMemberList();
-                if(result.Status.ToLower() == "ok")
+                var result = await _officeStaff.getOfficeStaffList();
+                if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
                 }
@@ -33,12 +32,12 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> getMemberDetail(int Id)
+        public async Task<IActionResult> getOfficeStaffDetail(int Id)
         {
             try
             {
-                var result = await _member.memberProfile(Id);
-                if(result.Status.ToLower() == "ok")
+                var result = await _officeStaff.officeStaffProfile(Id);
+                if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
                 }
@@ -50,14 +49,14 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> signUpMember(Member member)
+        public async Task<IActionResult> signUpOfficeStaff(OfficeStaff officeStaff)
         {
             try
             {
-                
-                var result = await _member.signUpMember(member);
+
+                var result = await _officeStaff.signUpofficeStaff(officeStaff);
                 if (result.Status.ToLower() == "ok")
-                { 
+                {
                     return Ok(result);
                 }
                 return BadRequest(result);
@@ -68,34 +67,13 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-        [HttpPost("MemberAuth")]
-        public async Task<IActionResult> memberAuthentication(Authentication authentication)
+        [HttpPost("AdminAuth")]
+        public async Task<IActionResult> officeStafAuthentication(Authentication authentication)
         {
             try
             {
-                var result = await _member.memberAuthentication(authentication);
-                if( result.Status.ToLower() == "ok")
-                {
-                    return Ok(result); 
-                }
-                return BadRequest(result);
-            }
-            catch (Exception exp)
-            {
-                return StatusCode(500, new ResponseResult("Fail", exp.Message));
-            }
-        }
-        [HttpPut("{Id:int}")]
-        public async Task<IActionResult> changeProfile(int Id, Member member)
-        {
-            try
-            {
-                if (Id != member.Id)
-                {
-                    return BadRequest("Id Mismatch");
-                }
-                var result = await _member.changeProfile(Id, member);
-                if(result.Status.ToLower() == "ok")
+                var result = await _officeStaff.officeStaffAuthentication(authentication);
+                if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
                 }
@@ -106,15 +84,36 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-        [HttpPut("deactive-member/{Id:int}")]
-        public async Task<IActionResult> deactivateMember(int Id)
+        [HttpPut("{Id:int}")]
+        public async Task<IActionResult> changeProfile(int Id, OfficeStaff officeStaff)
         {
             try
             {
-                var result = await _member.deactivateMember(Id);
-                if(result.Status.ToLower() == "ok")
+                if (Id != officeStaff.Id)
                 {
-                    return Ok(result); 
+                    return BadRequest("Id Mismatch");
+                }
+                var result = await _officeStaff.changeProfile(Id, officeStaff);
+                if (result.Status.ToLower() == "ok")
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            catch (Exception exp)
+            {
+                return StatusCode(500, new ResponseResult("Fail", exp.Message));
+            }
+        }
+        [HttpPut("deactive-admin/{Id:int}")]
+        public async Task<IActionResult> deactivateOfficeStaff(int Id)
+        {
+            try
+            {
+                var result = await _officeStaff.deactivateofficeStaff(Id);
+                if (result.Status.ToLower() == "ok")
+                {
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -128,10 +127,10 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
         {
             try
             {
-                var result = await _member.updatePassword(authentication);
-                if( result.Status.ToLower() == "ok")
+                var result = await _officeStaff.updatePassword(authentication);
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }

@@ -18,9 +18,9 @@ namespace BusinessLayer.Model
         [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Contact number must be 10 digits")]
         public string ContactNo { get; set; } = string.Empty;
         [EmailAddress(ErrorMessage = "Invalid email address")]
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public string? Status { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
     }
     public class Authentication
     {

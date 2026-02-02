@@ -11,7 +11,6 @@ namespace BusinessLayer.Interface
         public Task<ResponseResult> GetMosqueList();
         public Task<ResponseResult> GetMosqueById(int Id);
         public Task<ResponseResult> AddMosque(Mosque mosque);
-        public Task<ResponseResult> UpdateMosque(Mosque mosque);
-        public Task<ResponseResult> DeleteMosque(int Id);
+        public Task<ResponseResult> UpdateMosque(int Id,Mosque mosque);
     }
 }

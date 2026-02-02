@@ -9,8 +9,9 @@ namespace BusinessLayer.Model
     {
         [Key]
         public int Id { get; set; }
-        [Required(ErrorMessage = "Organization is required")]
         public virtual Organization? Organization { get; set; }
+        [Required(ErrorMessage = "Organization is required")]
+
         public int OrganizationId { get; set; }
         [Required(ErrorMessage = "Full Name is required")]
         public string FullName { get; set; } = string.Empty;
@@ -24,18 +25,15 @@ namespace BusinessLayer.Model
         public string? AlternateNo { get; set; }
 
         [EmailAddress(ErrorMessage = "Invalid email address")]
-        public string? Email { get; set; }
+        public string Email { get; set; } =string.Empty;
 
         /* ================= SECURITY ================= */
         public string Password { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Status is required")]
         public string Status { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Joining Date is required")]
-        public DateOnly JoiningDate { get; set; }
+        public DateTime JoiningDate { get; set; } = DateTime.Now;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
+    
 }

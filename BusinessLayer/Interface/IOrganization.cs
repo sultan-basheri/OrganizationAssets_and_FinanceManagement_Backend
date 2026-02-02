@@ -7,11 +7,10 @@ namespace BusinessLayer.Interface
 {
     public interface IOrganization
     {
-        public Task<ResponseResult> GetList();
-        public Task<ResponseResult> GetOrganizationList();
-        public Task<ResponseResult> GetOrganizationById(int Id);
-        public Task<ResponseResult> AddOrganization(Organization organization);
-        public Task<ResponseResult> UpdateOrganization(Organization organization);
-        public Task<ResponseResult> DeleteOrganization(int Id);
+        public Task<ResponseResult> getList();
+        public Task<ResponseResult> getOrganizationList();
+        public Task<ResponseResult> getOrganizationById(int Id);
+        public Task<ResponseResult> addOrganization(Organization organization);
+        public Task<ResponseResult> updateOrganization(int Id,Organization organization);
     }
 }

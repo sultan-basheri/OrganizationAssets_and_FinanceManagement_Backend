@@ -3,6 +3,7 @@ using BusinessLayer.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using OrganizationAssets_and_FinanceManagement.Repositories;
 
 namespace OrganizationAssets_and_FinanceManagement.Controllers
 {
@@ -22,7 +23,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             try
             {
                 var result = await _admin.getAdminList();
-                return Ok(result);
+                if(result.Status.ToLower() == "ok")
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
             catch (Exception exp)
             {
@@ -36,7 +41,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             try
             {
                 var result = await _admin.adminProfile(Id);
-                return Ok(result);
+                if(result.Status.ToLower() == "ok")
+                {
+                    return Ok(result); 
+                }
+                return BadRequest(result);
             }
             catch (Exception exp)
             {
@@ -48,8 +57,14 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
         {
             try
             {
+                
                 var result = await _admin.signUpAdmin(admin);
-                return Ok(result);
+                if (result.Status.ToLower() == "ok")
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+
             }
             catch (Exception exp)
             {
@@ -62,7 +77,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             try
             {
                 var result = await _admin.adminAuthentication(authentication);
-                return Ok(result);
+                if(result.Status.ToLower() == "ok")
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
             catch (Exception exp)
             {
@@ -79,7 +98,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                     return BadRequest("Id Mismatch");
                 }
                 var result = await _admin.changeProfile(Id, admin);
-                return Ok(result);
+                if(result.Status.ToLower() == "ok")
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
             catch (Exception exp)
             {
@@ -92,7 +115,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             try
             {
                 var result = await _admin.deactivateAdmin(Id);
-                return Ok(result);
+                if( result.Status.ToLower() == "ok")
+                {
+                    return Ok(result); 
+                }
+                return BadRequest(result);
             }
             catch (Exception exp)
             {
@@ -105,7 +132,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             try
             {
                 var result = await _admin.updatePassword(authentication);
-                return Ok(result);
+                if(result.Status.ToLower() == "ok")
+                {
+                    return Ok(result); 
+                }
+                return BadRequest(result);
             }
             catch (Exception exp)
             {

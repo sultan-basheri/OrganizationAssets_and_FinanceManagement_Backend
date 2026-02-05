@@ -3,28 +3,28 @@ using BusinessLayer.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrganizationAssets_and_FinanceManagement.Repositories;
-using System.Data;
 
 namespace OrganizationAssets_and_FinanceManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrganizationController : ControllerBase
+    public class PropertiesController : ControllerBase
     {
-        private readonly IOrganization _organization;
-        public OrganizationController(IOrganization organization)
+        private readonly IProperties _properties;
+        public PropertiesController(IProperties properties)
         {
-            _organization = organization;
+            _properties = properties;
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetOrganizationList()
+        public async Task<IActionResult> getPropertyList()
         {
             try
             {
-                var result = await _organization.getOrganizationList();
-                if( result.Status.ToLower() == "ok")
+                var result = await _properties.GetPropertyList();
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -33,16 +33,15 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-
         [HttpGet("{Id:int}")]
-        public async Task<IActionResult> GetOrganizationById(int Id)
+        public async Task<IActionResult> GetPropertyById(int Id)
         {
             try
             {
-                var result = await _organization.getOrganizationById(Id);
-                if(result.Status.ToLower() == "ok")
+                var result = await _properties.GetPropertyById(Id);
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -52,11 +51,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> addOrganization(Organization organization)
+        public async Task<IActionResult> addProperties(Properties properties)
         {
             try
             {
-                if (organization == null)
+                if (properties == null)
                 {
                     return BadRequest(new
                     {
@@ -66,31 +65,31 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 }
 
                 //  Only if base64Data is provided then generate filename + upload
-                if (!string.IsNullOrWhiteSpace(organization.base64Data))
+                if (!string.IsNullOrWhiteSpace(properties.base64Data))
                 {
-                    string extension = organization.docType.ToLower() == "pdf" ? ".pdf" : ".png";
+                    string extension = properties.DocType.ToLower() == "pdf" ? ".pdf" : ".png";
                     string fileName = $"{Guid.NewGuid()}{extension}";
 
-                    organization.docUrl = $"/Documents/{fileName}";
+                    properties.DocUrl = $"/Documents/{fileName}";
                 }
                 else
                 {
                     // base64 empty => docUrl/docType null
-                    organization.docUrl = null;
-                    organization.docType = null;
+                    properties.DocUrl = null;
+                    properties.DocType = null;
                 }
 
-                var result = await _organization.addOrganization(organization);
+                var result = await _properties.AddProperty(properties);
 
                 if (result.Status.ToLower() == "ok")
                 {
                     // ✅ Upload only when base64 exists
-                    if (!string.IsNullOrWhiteSpace(organization.base64Data))
+                    if (!string.IsNullOrWhiteSpace(properties.base64Data))
                     {
-                        string fileName = System.IO.Path.GetFileName(organization.docUrl);
+                        string fileName = System.IO.Path.GetFileName(properties.DocUrl);
 
                         DocumentUploadClass duc = new DocumentUploadClass();
-                        await duc.SaveBase64DocumentAsync(fileName, organization.base64Data, organization.docType);
+                        await duc.SaveBase64DocumentAsync(fileName, properties.base64Data, properties.DocType);
                     }
 
                     return Ok(result);
@@ -103,36 +102,35 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> updateOrganization(int Id, Organization organization)
+        public async Task<IActionResult> updateProperties(int Id, Properties properties)
         {
             try
             {
-                if (Id != organization.Id)
+                if (Id != properties.Id)
                 {
                     return BadRequest("Id Mismatch");
                 }
 
-                // ✅ old organization entity
-                var oldOrg = await _organization.getOrganizationEntityById(Id);
+                // ✅ old Property entity
+                var oldOrg = await _properties.getPropertyEntityById(Id);
                 if (oldOrg == null)
                 {
                     return NotFound(new ResponseResult("Fail", "Organization not found"));
                 }
 
                 // ✅ base64 empty => docUrl/docType same
-                if (string.IsNullOrWhiteSpace(organization.base64Data))
+                if (string.IsNullOrWhiteSpace(properties.base64Data))
                 {
-                    organization.docUrl = oldOrg.docUrl;
-                    organization.docType = oldOrg.docType;
+                    properties.DocUrl = oldOrg.DocUrl;
+                    properties.DocType = oldOrg.DocType;
                 }
                 else
                 {
                     // 1) old file delete
-                    if (!string.IsNullOrWhiteSpace(oldOrg.docUrl))
+                    if (!string.IsNullOrWhiteSpace(oldOrg.DocUrl))
                     {
-                        string oldFileName = Path.GetFileName(oldOrg.docUrl);
+                        string oldFileName = Path.GetFileName(oldOrg.DocUrl);
                         string oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Documents", oldFileName);
 
                         if (System.IO.File.Exists(oldFilePath))
@@ -142,19 +140,19 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                     }
 
                     // 2) new filename generate
-                    string extension = organization.docType.ToLower() == "pdf" ? ".pdf" : ".png";
+                    string extension = properties.DocType.ToLower() == "pdf" ? ".pdf" : ".png";
                     string fileName = $"{Guid.NewGuid()}{extension}";
 
                     // 3) new docUrl set
-                    organization.docUrl = $"/Documents/{fileName}";
+                    properties.DocUrl = $"/Documents/{fileName}";
 
                     // 4) save new file
                     DocumentUploadClass duc = new DocumentUploadClass();
-                    await duc.SaveBase64DocumentAsync(fileName, organization.base64Data, organization.docType);
+                    await duc.SaveBase64DocumentAsync(fileName, properties.base64Data, properties.DocType);
                 }
 
                 // DB update
-                var result = await _organization.updateOrganization(Id, organization);
+                var result = await _properties.UpdateProperty(Id, properties);
 
                 if (result.Status.ToLower() == "ok")
                 {

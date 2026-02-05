@@ -14,7 +14,7 @@ namespace BusinessLayer.Model
         public int Id { get; set; }   // PK
 
         public virtual PropertyRentAgreement? PRAgreement { get; set; }
-        [Required]
+
         public int PropertyRentAgreementId { get; set; }   // FK → RentAgreement
 
         [Required]
@@ -32,13 +32,8 @@ namespace BusinessLayer.Model
         public string? Remark { get; set; }
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
         public int OfficeStaffId { get; set; }
-
-        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        [Required]
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 }

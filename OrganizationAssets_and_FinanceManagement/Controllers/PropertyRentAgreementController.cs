@@ -3,28 +3,27 @@ using BusinessLayer.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrganizationAssets_and_FinanceManagement.Repositories;
-using System.Data;
 
 namespace OrganizationAssets_and_FinanceManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrganizationController : ControllerBase
+    public class PropertyRentAgreementController : ControllerBase
     {
-        private readonly IOrganization _organization;
-        public OrganizationController(IOrganization organization)
+        private readonly IPropertyRentAgreement _propertyRent;
+        public PropertyRentAgreementController(IPropertyRentAgreement propertyRent)
         {
-            _organization = organization;
+            _propertyRent = propertyRent;
         }
         [HttpGet]
-        public async Task<IActionResult> GetOrganizationList()
+        public async Task<IActionResult> GetPRAgreementList()
         {
             try
             {
-                var result = await _organization.getOrganizationList();
-                if( result.Status.ToLower() == "ok")
+                var result = await _propertyRent.GetPRAgreementList();
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -33,16 +32,15 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-
         [HttpGet("{Id:int}")]
-        public async Task<IActionResult> GetOrganizationById(int Id)
+        public async Task<IActionResult> GetPRAgreementById(int Id)
         {
             try
             {
-                var result = await _organization.getOrganizationById(Id);
-                if(result.Status.ToLower() == "ok")
+                var result = await _propertyRent.GetPRAgreementById(Id);
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -52,11 +50,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> addOrganization(Organization organization)
+        public async Task<IActionResult> addPRAgreement(PropertyRentAgreement propertyRent)
         {
             try
             {
-                if (organization == null)
+                if (propertyRent == null)
                 {
                     return BadRequest(new
                     {
@@ -66,31 +64,31 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 }
 
                 //  Only if base64Data is provided then generate filename + upload
-                if (!string.IsNullOrWhiteSpace(organization.base64Data))
+                if (!string.IsNullOrWhiteSpace(propertyRent.base64Data))
                 {
-                    string extension = organization.docType.ToLower() == "pdf" ? ".pdf" : ".png";
+                    string extension = propertyRent.DocExtension.ToLower() == "pdf" ? ".pdf" : ".png";
                     string fileName = $"{Guid.NewGuid()}{extension}";
 
-                    organization.docUrl = $"/Documents/{fileName}";
+                    propertyRent.DocUrl = $"/Documents/{fileName}";
                 }
                 else
                 {
                     // base64 empty => docUrl/docType null
-                    organization.docUrl = null;
-                    organization.docType = null;
+                    propertyRent.DocUrl = null;
+                    propertyRent.DocExtension = null;
                 }
 
-                var result = await _organization.addOrganization(organization);
+                var result = await _propertyRent.AddPRAgreement(propertyRent);
 
                 if (result.Status.ToLower() == "ok")
                 {
                     // ✅ Upload only when base64 exists
-                    if (!string.IsNullOrWhiteSpace(organization.base64Data))
+                    if (!string.IsNullOrWhiteSpace(propertyRent.base64Data))
                     {
-                        string fileName = System.IO.Path.GetFileName(organization.docUrl);
+                        string fileName = System.IO.Path.GetFileName(propertyRent.DocUrl);
 
                         DocumentUploadClass duc = new DocumentUploadClass();
-                        await duc.SaveBase64DocumentAsync(fileName, organization.base64Data, organization.docType);
+                        await duc.SaveBase64DocumentAsync(fileName, propertyRent.base64Data, propertyRent.DocExtension);
                     }
 
                     return Ok(result);
@@ -103,36 +101,35 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> updateOrganization(int Id, Organization organization)
+        public async Task<IActionResult> updatePRAgreement(int Id, PropertyRentAgreement propertyRent)
         {
             try
             {
-                if (Id != organization.Id)
+                if (Id != propertyRent.Id)
                 {
                     return BadRequest("Id Mismatch");
                 }
 
                 // ✅ old organization entity
-                var oldOrg = await _organization.getOrganizationEntityById(Id);
+                var oldOrg = await _propertyRent.getPRAgreementEntityById(Id);
                 if (oldOrg == null)
                 {
                     return NotFound(new ResponseResult("Fail", "Organization not found"));
                 }
 
                 // ✅ base64 empty => docUrl/docType same
-                if (string.IsNullOrWhiteSpace(organization.base64Data))
+                if (string.IsNullOrWhiteSpace(propertyRent.base64Data))
                 {
-                    organization.docUrl = oldOrg.docUrl;
-                    organization.docType = oldOrg.docType;
+                    propertyRent.DocUrl = oldOrg.DocUrl;
+                    propertyRent.DocExtension = oldOrg.DocExtension;
                 }
                 else
                 {
                     // 1) old file delete
-                    if (!string.IsNullOrWhiteSpace(oldOrg.docUrl))
+                    if (!string.IsNullOrWhiteSpace(oldOrg.DocUrl))
                     {
-                        string oldFileName = Path.GetFileName(oldOrg.docUrl);
+                        string oldFileName = Path.GetFileName(oldOrg.DocUrl);
                         string oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Documents", oldFileName);
 
                         if (System.IO.File.Exists(oldFilePath))
@@ -142,19 +139,19 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                     }
 
                     // 2) new filename generate
-                    string extension = organization.docType.ToLower() == "pdf" ? ".pdf" : ".png";
+                    string extension = propertyRent.DocExtension.ToLower() == "pdf" ? ".pdf" : ".png";
                     string fileName = $"{Guid.NewGuid()}{extension}";
 
                     // 3) new docUrl set
-                    organization.docUrl = $"/Documents/{fileName}";
+                    propertyRent.DocUrl = $"/Documents/{fileName}";
 
                     // 4) save new file
                     DocumentUploadClass duc = new DocumentUploadClass();
-                    await duc.SaveBase64DocumentAsync(fileName, organization.base64Data, organization.docType);
+                    await duc.SaveBase64DocumentAsync(fileName, propertyRent.base64Data, propertyRent.DocExtension);
                 }
 
                 // DB update
-                var result = await _organization.updateOrganization(Id, organization);
+                var result = await _propertyRent.UpdatePRAgreement(Id, propertyRent);
 
                 if (result.Status.ToLower() == "ok")
                 {

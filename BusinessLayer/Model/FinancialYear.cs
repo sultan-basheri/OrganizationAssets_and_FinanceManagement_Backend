@@ -32,10 +32,9 @@ namespace BusinessLayer.Model
         public string YearName { get; set; } = string.Empty;
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
+        
         public int OfficeStaffId { get; set; }   
 
-        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public ICollection<Donation> DonationFYear { get; set; }

@@ -26,7 +26,8 @@ namespace DatabaseLayer.Repository
                 if (mosque == null)
                     return new ResponseResult("Fail", "Please fill all the fields");
 
-                List<string> errors = new();
+                List<string> errors = new List<string>();
+                var data = await _context.Mosques.ToListAsync();
 
                 //  Organization must exist
                 bool orgExists = await _context.OrganizationMaster.AnyAsync(o => o.Id == mosque.OrganizationId);
@@ -45,6 +46,10 @@ namespace DatabaseLayer.Repository
 
                 if (duplicateInSameOrg)
                     errors.Add("Mosque already exists in this organization.");
+                if(data.Any(x => x.Name ==  mosque.Name))
+                {
+                    errors.Add("Mosque name already exists.");
+                }
 
                 if (errors.Count > 0)
                 {
@@ -61,28 +66,24 @@ namespace DatabaseLayer.Repository
             }
         }
 
-        public async Task<ResponseResult> GetList()
-        {
-            try
-            {
-                var result = await _context.Mosques.ToListAsync();
-                if (result == null || !result.Any())
-                {
-                    return new ResponseResult("Fail", "Empty");
-                }
-                return new ResponseResult("Ok", result);
-            }
-            catch (Exception exp)
-            {
-                return new ResponseResult("Fail", exp.Message);
-            }
-        }
-
         public async Task<ResponseResult> GetMosqueById(int Id)
         {
             try
             {
-                var result = await _context.Mosques.FirstOrDefaultAsync(x => x.Id == Id);
+                var result = await _context.Mosques.Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.Address,
+                    x.StreetName,
+                    x.Area,
+                    x.MosqueImam,
+                    x.ContactNo,
+                    x.OrganizationId,
+                    x.EstablishedDate,
+                    x.Established_Hijri,
+                    x.MosqueType
+                }).FirstOrDefaultAsync(x => x.Id == Id);
                 if (result == null)
                 {
                     return new ResponseResult("Fail", "Mosque Not Exist");
@@ -124,35 +125,38 @@ namespace DatabaseLayer.Repository
             {
                 List<string> errors = new List<string>();
 
+                var data = await _context.Mosques.ToListAsync();
                 var existing = await _context.Mosques.FirstOrDefaultAsync(x => x.Id == Id);
-                bool orgExists = await _context.OrganizationMaster.AnyAsync(o => o.Id == mosque.OrganizationId);
-
-
                 if (existing == null)
                 {
                     return new ResponseResult("Fail", "Mosque not found");
                 }
-                if (!orgExists)
-                {
-                    errors.Add("Invalid Organization. Organization does not exist.");
-                }
+                
                 bool existsInOtherOrg = await _context.Mosques.AnyAsync(m => m.Name == mosque.Name && m.OrganizationId != existing.OrganizationId);
 
                 if (existsInOtherOrg)
+                {
                     errors.Add("This mosque is already assigned to another organization.");
-
+                }
                 //  Duplicate mosque in SAME organization
                 bool duplicateInSameOrg = await _context.Mosques.AnyAsync(m =>m.Name == mosque.Name && m.OrganizationId == existing.OrganizationId && m.Id != Id);
 
                 if (duplicateInSameOrg)
+                {
                     errors.Add("Mosque name already exists in this organization.");
+                }
+
+                if (data.Any(x => x.Name == mosque.Name))
+                {
+                    errors.Add("Mosque name already exists.");
+                }
+
                 if (errors.Count > 0)
                 {
                     return new ResponseResult("Fail", string.Join(" | ", errors));
                 }
 
                 // ✅ update
-                existing.OrganizationId = mosque.OrganizationId;
                 existing.Address = mosque.Address;
                 existing.StreetName = mosque.StreetName;
                 existing.Area = mosque.Area;
@@ -168,7 +172,7 @@ namespace DatabaseLayer.Repository
             {
                 return new ResponseResult("Fail", exp.Message);
             }
-
         }
+
     }
 }

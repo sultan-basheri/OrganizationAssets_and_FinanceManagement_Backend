@@ -100,7 +100,7 @@ namespace DatabaseLayer.Repository
                     o.UpdatedAt,
                     o.Status
                 }).ToListAsync();
-                if (result == null)
+                if (result == null || !result.Any())
                 {
                     return new ResponseResult("Fail", "Empty");
                 }
@@ -151,7 +151,17 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.OfficeStaffs.FirstOrDefaultAsync(x => x.Id == Id);
+                var result = await _context.OfficeStaffs.Select(x => new
+                {
+                    x.Id,
+                    x.FullName,
+                    x.Address,
+                    x.Email,
+                    x.ContactNo,
+                    x.DateOfJoining,
+                    x.CreatedAt,
+                    x.Status
+                }).FirstOrDefaultAsync(x => x.Id == Id);
                 if (result == null)
                 {
                     return new ResponseResult("Fail", $"OfficeStaff Id = {Id} Is Not Exist");
@@ -202,8 +212,8 @@ namespace DatabaseLayer.Repository
                     mail.Body = $@"
                         Hello {officeStaff.FullName},
 
-                        Your admin account has been 
-                        created successfully.
+                        Your Office Staff account has 
+                        been created successfully.
 
                         You can login using ANY ONE 
                         of the following:

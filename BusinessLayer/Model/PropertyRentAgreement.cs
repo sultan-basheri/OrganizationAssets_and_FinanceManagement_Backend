@@ -17,7 +17,7 @@ namespace BusinessLayer.Model
         [Key]
         public int Id { get; set; }   // PK
 
-        public virtual Properties? Properties { get; set; }
+        public virtual Properties? Property { get; set; }
         [Required]
         public int PropertyId { get; set; }   // FK → Property
 
@@ -58,7 +58,7 @@ namespace BusinessLayer.Model
         public string DocumentNo { get; set; } = string.Empty; // PAN,Passport
 
         [NotMapped]
-        public string base64Data { get; set; }
+        public string? base64Data { get; set; }
         public string? DocExtension { get; set; } // PDF,PNG,JPG
         public string? DocUrl { get; set; }
 
@@ -69,10 +69,8 @@ namespace BusinessLayer.Model
         // Example: Monthly, Yearly, Lease
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
         public int OfficeStaffId { get; set; }   // FK → OfficeStaff
 
-        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public ICollection<RentMaster> RentMasterPRA { get; set; }

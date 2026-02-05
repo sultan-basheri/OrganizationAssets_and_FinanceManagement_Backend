@@ -49,7 +49,7 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> signUpOfficeStaff(OfficeStaff officeStaff)
+        public async Task<IActionResult> signUpofficeStaff(OfficeStaff officeStaff)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-        [HttpPost("AdminAuth")]
+        [HttpPost("OfficeStaffAuth")]
         public async Task<IActionResult> officeStafAuthentication(Authentication authentication)
         {
             try
@@ -105,7 +105,7 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
-        [HttpPut("deactive-admin/{Id:int}")]
+        [HttpPut("deactive-OfficeStaff/{Id:int}")]
         public async Task<IActionResult> deactivateOfficeStaff(int Id)
         {
             try

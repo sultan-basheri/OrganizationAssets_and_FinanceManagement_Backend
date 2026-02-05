@@ -17,7 +17,7 @@ namespace BusinessLayer.Model
         [Key]
         public int Id { get; set; }   // PK
 
-        [Required]
+       
         public virtual Organization? Organization { get; set; }
         public int OrganizationId { get; set; }   // FK → Organization
 
@@ -45,7 +45,7 @@ namespace BusinessLayer.Model
         public DateOnly OwnershipDate { get; set; }
 
         [NotMapped]
-        public string base64Data { get; set; }
+        public string? base64Data { get; set; }
         public string? DocType { get; set; }
         public string? DocUrl { get; set; }
 

@@ -7,19 +7,20 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MosqueController : ControllerBase
+    public class FinancialYearController : ControllerBase
     {
-        private readonly IMosque _mosque;
-        public MosqueController(IMosque mosque)
+        private readonly IFinancialYear _financialYear;
+        public FinancialYearController(IFinancialYear financialYear)
         {
-            _mosque = mosque;
+            _financialYear = financialYear;
         }
+        
         [HttpGet]
-        public async Task<IActionResult> GetMosqueList()
+        public async Task<IActionResult> GetFinancialList()
         {
             try
             {
-                var result = await _mosque.GetMosqueList();
+                var result = await _financialYear.GetFinancialYearList();
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
@@ -32,14 +33,14 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpGet("{Id:int}")]
-        public async Task<IActionResult> GetMosqueById(int Id)
+        public async Task<IActionResult> GetFinancialYearById(int Id)
         {
             try
             {
-                var result = await _mosque.GetMosqueById(Id);
-                if(result.Status.ToLower() == "ok")
+                var result = await _financialYear.GetFinancialYearById(Id);
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -49,14 +50,14 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> addMosque(Mosque mosque)
+        public async Task<IActionResult> addFinancial(FinancialYear financialYear)
         {
             try
             {
-                var result = await _mosque.AddMosque(mosque);
-                if( result.Status.ToLower() == "ok")
+                var result = await _financialYear.AddFinancialYear(financialYear);
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -66,18 +67,18 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> updateMosque(int Id,Mosque mosque)
+        public async Task<IActionResult> updateFinancial(int Id, FinancialYear financialYear)
         {
             try
             {
-                if(Id != mosque.Id)
+                if (Id != financialYear.Id)
                 {
                     return BadRequest("Id Mismatch");
                 }
-                var result = await _mosque.UpdateMosque(Id,mosque);
-                if(result.Status.ToLower() == "ok")
+                var result = await _financialYear.UpdateFinancialYear(Id, financialYear);
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }

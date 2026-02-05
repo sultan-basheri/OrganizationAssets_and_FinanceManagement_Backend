@@ -19,12 +19,12 @@ namespace BusinessLayer.Model
         [Key]
         public int Id { get; set; }   // Staff ID (PK)
 
-        [Required]
+       
         public virtual Mosque? Mosque { get; set; }
 
         public int MosqueId { get; set; }   
 
-        [Required]
+       
         public virtual Organization? Organization { get; set; }
         public int OrganizationId { get; set; }    
 
@@ -37,7 +37,12 @@ namespace BusinessLayer.Model
         [Required(ErrorMessage = "Address is required")]
         public string Address { get; set; } = string.Empty;
 
-        public string? AdharNo { get; set; }
+        public string? AadharNo { get; set; }
+
+        [Required(ErrorMessage = "Contact number is required")]
+        [Phone(ErrorMessage = "Invalid contact number")]
+        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Contact number must be 10 digits")]
+        public string ContactNo { get; set; } = string.Empty;
 
         [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Alternate number must be 10 digits")]
         public string? AlternateNo { get; set; }
@@ -59,7 +64,6 @@ namespace BusinessLayer.Model
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
         public int OfficeStaffId { get; set; }
 
         public ICollection<Donation> DonationStaff { get; set; }

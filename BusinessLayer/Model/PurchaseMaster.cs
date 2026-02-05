@@ -58,12 +58,13 @@ namespace BusinessLayer.Model
         public int OrganizationId { get; set; }
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
+     
         public int OfficeStaffId { get; set; }   
 
         public virtual FinancialYear? FinancialYear { get; set; }
-        [Required]
+       
         public int FinancialYearId { get; set; }  
+
 
         public ICollection<PurchasePayment> PurPaymentMaster { get; set; }
     }

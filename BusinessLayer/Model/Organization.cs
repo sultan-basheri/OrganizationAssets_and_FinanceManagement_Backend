@@ -44,6 +44,13 @@ namespace BusinessLayer.Model
 
         public string? EstablishedYear { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [NotMapped]
+        public string base64Data { get; set; }
+        public string? docType { get; set; }
+        public string? docUrl { get; set; }
+
+
         public ICollection<Member> EnrollOrgMember { get; set; }
         public ICollection<Staff> EnrollStaffOrg { get; set; }
         public ICollection<Properties> EnrollPropertiesOrg { get; set; }
@@ -52,10 +59,7 @@ namespace BusinessLayer.Model
         public ICollection<PurchaseMaster> EnrollPurchaseMasterOrg { get; set; }
         public ICollection<PurchasePayment> EnrollPurchasePaymentOrg { get; set; }
 
-        [NotMapped]
-        public string base64Data { get; set; }
-        public string? docType { get; set; }
-        public string? docUrl { get; set; }
+        
 
     }
 }

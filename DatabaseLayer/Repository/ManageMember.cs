@@ -109,7 +109,7 @@ namespace DatabaseLayer.Repository
                     o.CreatedAt,
                     o.Status
                 }).ToListAsync();
-                if (result == null)
+                if (result == null || !result.Any())
                 {
                     return new ResponseResult("Fail", "Empty");
                 }

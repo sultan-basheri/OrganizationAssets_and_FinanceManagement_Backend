@@ -48,30 +48,25 @@ namespace DatabaseLayer.Repository
                 return new ResponseResult("Fail", exp.Message);
             }
         }
-
-
-        public async Task<ResponseResult> getList()
-        {
-            try
-            {
-                var result = await _context.OrganizationMaster.ToListAsync();
-                if (result == null)
-                {
-                    return new ResponseResult("Fail", "Empty");
-                }
-                return new ResponseResult("Ok", result);
-            }
-            catch (Exception exp)
-            {
-                return new ResponseResult("Fail",exp.Message);
-            }
-        }
-
         public async Task<ResponseResult> getOrganizationById(int Id)
         {
             try
             {
-                var result = await _context.OrganizationMaster.FirstOrDefaultAsync(x => x.Id == Id);
+                var result = await _context.OrganizationMaster.Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.Address,
+                    x.TrustNo,
+                    x.City,
+                    x.ContactNo,
+                    x.AlternateNo,
+                    x.Email,
+                    x.EstablishedYear,
+                    x.CreatedAt,
+                    x.docType,
+                    x.docUrl
+                }).FirstOrDefaultAsync(x => x.Id == Id);
                 if (result == null)
                 {
                     return new ResponseResult("Fail", $"Organization Id = {Id} Not Exist");
@@ -82,9 +77,11 @@ namespace DatabaseLayer.Repository
             {
                 return new ResponseResult("Fail", exp.Message);
             }
-            
         }
-
+        public async Task<Organization?> getOrganizationEntityById(int id)
+        {
+            return await _context.OrganizationMaster.FirstOrDefaultAsync(x => x.Id == id);
+        }
         public async Task<ResponseResult> getOrganizationList()
         {
             try
@@ -99,7 +96,9 @@ namespace DatabaseLayer.Repository
                     x.AlternateNo,
                     x.Email,
                     x.EstablishedYear,
-                    x.CreatedAt
+                    x.CreatedAt,
+                    x.docType,
+                    x.docUrl,
                 }).ToListAsync();
 
                 if(result == null)
@@ -151,6 +150,8 @@ namespace DatabaseLayer.Repository
                 result.AlternateNo = organization.AlternateNo;
                 result.Email = organization.Email;
                 result.EstablishedYear = organization.EstablishedYear;
+                result.docType = organization.docType;
+                result.docUrl = organization.docUrl;
                 await _context.SaveChangesAsync();
 
                 return new ResponseResult("Ok", "Update successful");
@@ -160,5 +161,6 @@ namespace DatabaseLayer.Repository
                 return new ResponseResult("Fail", exp.Message);
             }
         }
+
     }
 }

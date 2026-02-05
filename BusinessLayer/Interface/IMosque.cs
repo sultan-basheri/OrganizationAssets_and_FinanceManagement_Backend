@@ -7,7 +7,6 @@ namespace BusinessLayer.Interface
 {
     public interface IMosque
     {
-        public Task<ResponseResult> GetList();
         public Task<ResponseResult> GetMosqueList();
         public Task<ResponseResult> GetMosqueById(int Id);
         public Task<ResponseResult> AddMosque(Mosque mosque);

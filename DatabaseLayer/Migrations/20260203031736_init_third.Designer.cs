@@ -4,6 +4,7 @@ using DatabaseLayer.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260203031736_init_third")]
+    partial class init_third
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -534,6 +537,9 @@ namespace DatabaseLayer.Migrations
                     b.Property<int>("OfficeStaffId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PropertiesId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PropertyId")
                         .HasColumnType("int");
 
@@ -551,7 +557,7 @@ namespace DatabaseLayer.Migrations
 
                     b.HasIndex("OfficeStaffId");
 
-                    b.HasIndex("PropertyId");
+                    b.HasIndex("PropertiesId");
 
                     b.ToTable("PropertyRentAgreements");
                 });
@@ -773,18 +779,14 @@ namespace DatabaseLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AadharNo")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AlternateNo")
+                    b.Property<string>("AdharNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ContactNo")
-                        .IsRequired()
+                    b.Property<string>("AlternateNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -1013,15 +1015,13 @@ namespace DatabaseLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusinessLayer.Model.Properties", "Property")
+                    b.HasOne("BusinessLayer.Model.Properties", "Properties")
                         .WithMany("EnrollProPRA")
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PropertiesId");
 
                     b.Navigation("OfficeStaff");
 
-                    b.Navigation("Property");
+                    b.Navigation("Properties");
                 });
 
             modelBuilder.Entity("BusinessLayer.Model.PurchaseMaster", b =>

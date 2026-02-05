@@ -48,7 +48,6 @@ namespace BusinessLayer.Model
         [Required(ErrorMessage = "Gender is required")]
         public string Gender { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }

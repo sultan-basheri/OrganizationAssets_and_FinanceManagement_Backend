@@ -51,6 +51,7 @@ namespace DatabaseLayer.Repository
                 existing.ContactNo = officeStaff.ContactNo;
                 existing.Address = officeStaff.Address;
                 existing.Gender = officeStaff.Gender;
+                existing.UpdatedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();
 
@@ -96,6 +97,7 @@ namespace DatabaseLayer.Repository
                     o.Email,
                     o.DateOfJoining,
                     o.Gender,
+                    o.Salary,
                     o.CreatedAt,
                     o.UpdatedAt,
                     o.Status
@@ -159,7 +161,10 @@ namespace DatabaseLayer.Repository
                     x.Email,
                     x.ContactNo,
                     x.DateOfJoining,
+                    x.Gender,
+                    x.Salary,
                     x.CreatedAt,
+                    x.UpdatedAt,
                     x.Status
                 }).FirstOrDefaultAsync(x => x.Id == Id);
                 if (result == null)

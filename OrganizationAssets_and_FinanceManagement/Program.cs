@@ -21,6 +21,14 @@ builder.Services.AddScoped<IProperties, ManageProperties>();
 builder.Services.AddScoped<IFinancialYear, ManageFinancialYear>();
 builder.Services.AddScoped<IPropertyRentAgreement, ManagePropertyRentAgreement>();
 builder.Services.AddScoped<IRentMaster, ManageRentMaster>();
+builder.Services.AddScoped<IDonation, ManageDonation>();
+builder.Services.AddScoped<ISalaryMaster, ManageSalaryMaster>();
+builder.Services.AddScoped<IWithdrawalSalary, ManageWithdrawalSalary>();
+builder.Services.AddScoped<IExpenseCategory, ManageExpenseCategory>();
+builder.Services.AddScoped<IExpenseMaster,ManageExpenseMaster>();
+builder.Services.AddScoped<IPurchaseMaster, ManagePurchaseMaster>();
+builder.Services.AddScoped<IPurchasePayment, ManagePurchasePayment>();
+
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

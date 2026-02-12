@@ -47,9 +47,9 @@ namespace BusinessLayer.Model
         public DateOnly BillDate { get; set; }
 
         [NotMapped]
-        public string base64Data { get; set; }
+        public string? base64Data { get; set; }
         public string? DocType { get; set; } // PDF, PNG, JPG etc.
-        public string? BillUpload { get; set; }   // File URL / Path
+        public string? BillUrl { get; set; }   // File URL / Path
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

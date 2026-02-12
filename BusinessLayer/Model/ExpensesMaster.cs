@@ -14,7 +14,7 @@ namespace BusinessLayer.Model
         public int Id { get; set; }   // PK
 
         public virtual ExpenseCategory? ExpenseCategory { get; set; }
-        [Required]
+
         public int ExpenseCategoryId { get; set; }   // FK → ExpenseCategory
 
         [Required(ErrorMessage = "Paid To is required")]
@@ -32,14 +32,11 @@ namespace BusinessLayer.Model
         public string? Reference { get; set; }
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
         public int OfficeStaffId { get; set; }   // FK → OfficeStaff
 
         public virtual FinancialYear? FinancialYear { get; set; }
-        [Required]
         public int FinancialYearId { get; set; }   // FK → FinancialYear
 
-        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

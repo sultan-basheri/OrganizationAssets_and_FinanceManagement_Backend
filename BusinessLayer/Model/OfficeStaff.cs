@@ -47,10 +47,11 @@ namespace BusinessLayer.Model
 
         [Required(ErrorMessage = "Gender is required")]
         public string Gender { get; set; } = string.Empty;
-
+        [Required(ErrorMessage = "Salary is required")]
+        public decimal Salary { get; set; }
         public string Password { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
         public string Status { get; set; } = string.Empty;
 
         public ICollection<Staff> EnrollStaffOff { get; set; }

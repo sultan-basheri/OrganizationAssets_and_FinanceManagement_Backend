@@ -73,7 +73,7 @@ namespace DatabaseLayer.Repository
                 }).FirstOrDefaultAsync(x => x.Id == Id);
                 if (result == null)
                 {
-                    return new ResponseResult("Fail", $"Staff Id = {Id} Not Exist");
+                    return new ResponseResult("Fail", $"Property Id = {Id} Not Exist");
                 }
                 return new ResponseResult("Ok", result);
             }

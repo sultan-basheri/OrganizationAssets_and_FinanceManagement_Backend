@@ -8,20 +8,19 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PropertiesController : ControllerBase
+    public class PurchaseMasterController : ControllerBase
     {
-        private readonly IProperties _properties;
-        public PropertiesController(IProperties properties)
+        private readonly IPurchaseMaster _purchaseMaster;
+        public PurchaseMasterController(IPurchaseMaster purchaseMaster)
         {
-            _properties = properties;
+            _purchaseMaster = purchaseMaster;
         }
-
         [HttpGet]
-        public async Task<IActionResult> getPropertyList()
+        public async Task<IActionResult> getPurchaseList()
         {
             try
             {
-                var result = await _properties.GetPropertyList();
+                var result = await _purchaseMaster.getPurchaseList();
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
@@ -34,11 +33,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpGet("{Id:int}")]
-        public async Task<IActionResult> GetPropertyById(int Id)
+        public async Task<IActionResult> GetPurchaseDetailById(int Id)
         {
             try
             {
-                var result = await _properties.GetPropertyById(Id);
+                var result = await _purchaseMaster.getPurchaseById(Id);
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
@@ -51,11 +50,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> addProperties(Properties properties)
+        public async Task<IActionResult> addPurchase(PurchaseMaster purchaseMaster)
         {
             try
             {
-                if (properties == null)
+                if (purchaseMaster == null)
                 {
                     return BadRequest(new
                     {
@@ -65,31 +64,31 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 }
 
                 //  Only if base64Data is provided then generate filename + upload
-                if (!string.IsNullOrWhiteSpace(properties.base64Data))
+                if (!string.IsNullOrWhiteSpace(purchaseMaster.base64Data))
                 {
-                    string extension = properties.DocType.ToLower() == "pdf" ? ".pdf" : ".png";
+                    string extension = purchaseMaster.DocType.ToLower() == "pdf" ? ".pdf" : ".png";
                     string fileName = $"{Guid.NewGuid()}{extension}";
 
-                    properties.DocUrl = $"/Documents/{fileName}";
+                    purchaseMaster.BillUrl = $"/Documents/{fileName}";
                 }
                 else
                 {
                     // base64 empty => docUrl/docType null
-                    properties.DocUrl = null;
-                    properties.DocType = null;
+                    purchaseMaster.BillUrl = null;
+                    purchaseMaster.DocType = null;
                 }
 
-                var result = await _properties.AddProperty(properties);
+                var result = await _purchaseMaster.addPurchase(purchaseMaster);
 
                 if (result.Status.ToLower() == "ok")
                 {
                     // ✅ Upload only when base64 exists
-                    if (!string.IsNullOrWhiteSpace(properties.base64Data))
+                    if (!string.IsNullOrWhiteSpace(purchaseMaster.base64Data))
                     {
-                        string fileName = System.IO.Path.GetFileName(properties.DocUrl);
+                        string fileName = System.IO.Path.GetFileName(purchaseMaster.BillUrl);
 
                         DocumentUploadClass duc = new DocumentUploadClass();
-                        await duc.SaveBase64DocumentAsync(fileName, properties.base64Data, properties.DocType);
+                        await duc.SaveBase64DocumentAsync(fileName, purchaseMaster.base64Data, purchaseMaster.DocType);
                     }
 
                     return Ok(result);
@@ -103,34 +102,34 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> updateProperties(int Id, Properties properties)
+        public async Task<IActionResult> updateProperties(int Id, PurchaseMaster purchaseMaster)
         {
             try
             {
-                if (Id != properties.Id)
+                if (Id != purchaseMaster.Id)
                 {
                     return BadRequest("Id Mismatch");
                 }
 
                 // ✅ old Property entity
-                var oldPro = await _properties.getPropertyEntityById(Id);
-                if (oldPro == null)
+                var oldPur = await _purchaseMaster.getPurchaseEntityById(Id);
+                if (oldPur == null)
                 {
-                    return NotFound(new ResponseResult("Fail", "Property not found"));
+                    return NotFound(new ResponseResult("Fail", "Purchase Detail not found"));
                 }
 
                 // ✅ base64 empty => docUrl/docType same
-                if (string.IsNullOrWhiteSpace(properties.base64Data))
+                if (string.IsNullOrWhiteSpace(purchaseMaster.base64Data))
                 {
-                    properties.DocUrl = oldPro.DocUrl;
-                    properties.DocType = oldPro.DocType;
+                    purchaseMaster.BillUrl = oldPur.BillUrl;
+                    purchaseMaster.DocType = oldPur.DocType;
                 }
                 else
                 {
                     // 1) old file delete
-                    if (!string.IsNullOrWhiteSpace(oldPro.DocUrl))
+                    if (!string.IsNullOrWhiteSpace(oldPur.BillUrl))
                     {
-                        string oldFileName = Path.GetFileName(oldPro.DocUrl);
+                        string oldFileName = Path.GetFileName(oldPur.BillUrl);
                         string oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Documents", oldFileName);
 
                         if (System.IO.File.Exists(oldFilePath))
@@ -140,19 +139,19 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                     }
 
                     // 2) new filename generate
-                    string extension = properties.DocType.ToLower() == "pdf" ? ".pdf" : ".png";
+                    string extension = purchaseMaster.DocType.ToLower() == "pdf" ? ".pdf" : ".png";
                     string fileName = $"{Guid.NewGuid()}{extension}";
 
                     // 3) new docUrl set
-                    properties.DocUrl = $"/Documents/{fileName}";
+                    purchaseMaster.BillUrl = $"/Documents/{fileName}";
 
                     // 4) save new file
                     DocumentUploadClass duc = new DocumentUploadClass();
-                    await duc.SaveBase64DocumentAsync(fileName, properties.base64Data, properties.DocType);
+                    await duc.SaveBase64DocumentAsync(fileName, purchaseMaster.base64Data, purchaseMaster.DocType);
                 }
 
                 // DB update
-                var result = await _properties.UpdateProperty(Id, properties);
+                var result = await _purchaseMaster.updatePurchaseDetail(Id, purchaseMaster);
 
                 if (result.Status.ToLower() == "ok")
                 {

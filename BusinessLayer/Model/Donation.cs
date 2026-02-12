@@ -14,11 +14,11 @@ namespace BusinessLayer.Model
         public int Id { get; set; }  
 
         public virtual Organization? Organization { get; set; } 
-        [Required]
+       
         public int OrganizationId { get; set; }   
 
         public virtual Staff? Staff { get; set; }
-        [Required]
+
         public int StaffId { get; set; }   
 
         public string? DonorThrough { get; set; }   
@@ -35,19 +35,18 @@ namespace BusinessLayer.Model
         // Example: Cash, UPI, Bank Transfer
 
         [Required]
-        public DateOnly PaymentDate { get; set; }
+        public DateTime PaymentDate { get; set; }
 
         public string? Remark { get; set; }
 
         public virtual FinancialYear? FinancialYear { get; set; }
-        [Required]
+  
         public int FinancialYearId { get; set; }   
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
+      
         public int OfficeStaffId { get; set; }   
 
-        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

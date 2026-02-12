@@ -26,15 +26,12 @@ namespace BusinessLayer.Model
         public DateOnly GeneratedDate { get; set; }
 
         public virtual Organization? Organization { get; set; }
-        [Required]
         public int OrganizationId { get; set; }   // FK → Organization
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
         public int OfficeStaffId { get; set; }   // FK → OfficeStaff
 
         public virtual FinancialYear? FinancialYear { get; set; }
-        [Required]
         public int FinancialYearId { get; set; }   // FK → FinancialYear
     }
 }

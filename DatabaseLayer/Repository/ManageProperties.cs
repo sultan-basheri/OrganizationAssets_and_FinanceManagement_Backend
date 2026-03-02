@@ -23,7 +23,7 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.Properties.Select(x => new
+                var properties = await _context.Properties.Select(x => new
                 {
                     x.Id,
                     x.OrganizationId,
@@ -39,12 +39,18 @@ namespace DatabaseLayer.Repository
                     x.CreatedAt,
                     x.OfficeStaffId
                 }).ToListAsync();
+                var organizations = await _context.OrganizationMaster
+                    .Select(a => new
+                        {
+                            a.Id,
+                            a.Name
+                        }).ToListAsync();
 
-                if (result == null || !result.Any())
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Fail", "Empty");
-                }
-                return new ResponseResult("Ok", result);
+                    Properties = properties,
+                    Organizations = organizations
+                });
             }
             catch (Exception exp)
             {
@@ -129,7 +135,7 @@ namespace DatabaseLayer.Repository
             try
             {
                 List<string> errors = new List<string>();
-               
+
                 var result = await _context.Properties.FirstOrDefaultAsync(x => x.Id == Id);
                 var data = await _context.Properties.ToListAsync();
                 if (result == null)

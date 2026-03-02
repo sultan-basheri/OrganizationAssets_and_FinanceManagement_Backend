@@ -10,7 +10,6 @@ namespace BusinessLayer.Model
         [Key]
         public int Id { get; set; }
         public virtual Organization? Organization { get; set; }
-        [Required(ErrorMessage = "Organization is required")]
 
         public int OrganizationId { get; set; }
         [Required(ErrorMessage = "Full Name is required")]
@@ -28,11 +27,11 @@ namespace BusinessLayer.Model
         public string Email { get; set; } =string.Empty;
 
         /* ================= SECURITY ================= */
-        public string Password { get; set; } = string.Empty;
+        public string? Password { get; set; }
         public string Role { get; set; } = string.Empty;
 
         public string Status { get; set; } = string.Empty;
-        public DateTime JoiningDate { get; set; } = DateTime.Now;
+        public DateTime JoiningDate { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
     

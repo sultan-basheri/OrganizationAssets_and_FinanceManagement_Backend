@@ -99,70 +99,79 @@ namespace DatabaseLayer.Repository
 
         public async Task<ResponseResult> GetMosqueList()
         {
-            var result = await _context.Mosques.Select(x => new
+            try
             {
-                x.OrganizationId,
-                x.Name,
-                x.Address,
-                x.StreetName,
-                x.Area,
-                x.MosqueImam,
-                x.ContactNo,
-                x.EstablishedDate,
-                x.Established_Hijri,
-                x.MosqueType,
-            }).ToListAsync();
-            if (result == null || !result.Any())
-            {
-                return new ResponseResult("Fail", "Empty");
+                var mosques = await _context.Mosques.Select(x => new
+                {
+                    x.Id,
+                    x.OrganizationId,
+                    x.Name,
+                    x.Address,
+                    x.StreetName,
+                    x.Area,
+                    x.MosqueImam,
+                    x.ContactNo,
+                    x.EstablishedDate,
+                    x.Established_Hijri,
+                    x.MosqueType,
+                }).ToListAsync();
+                var organizations = await _context.OrganizationMaster
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.Name
+                        })
+                        .ToListAsync();
+                
+                return new ResponseResult("Ok", new
+                {
+                    Mosque = mosques,
+                    Organizations = organizations
+                });
             }
-            return new ResponseResult("Ok", result);
+            catch (Exception exp)
+            {
+                return new ResponseResult("Fail", exp.Message);
+            }
+            
         }
 
         public async Task<ResponseResult> UpdateMosque(int Id, Mosque mosque)
         {
             try
             {
-                List<string> errors = new List<string>();
+                var existing = await _context.Mosques
+                    .FirstOrDefaultAsync(x => x.Id == Id);
 
-                var data = await _context.Mosques.ToListAsync();
-                var existing = await _context.Mosques.FirstOrDefaultAsync(x => x.Id == Id);
                 if (existing == null)
                 {
                     return new ResponseResult("Fail", "Mosque not found");
                 }
-                
-                bool existsInOtherOrg = await _context.Mosques.AnyAsync(m => m.Name == mosque.Name && m.OrganizationId != existing.OrganizationId);
 
-                if (existsInOtherOrg)
-                {
-                    errors.Add("This mosque is already assigned to another organization.");
-                }
-                //  Duplicate mosque in SAME organization
-                bool duplicateInSameOrg = await _context.Mosques.AnyAsync(m =>m.Name == mosque.Name && m.OrganizationId == existing.OrganizationId && m.Id != Id);
+                // Duplicate in SAME organization (except itself)
+                bool duplicateInSameOrg = await _context.Mosques
+                    .AnyAsync(m =>
+                        m.Name == mosque.Name &&
+                        m.OrganizationId == mosque.OrganizationId &&
+                        m.Id != Id);
 
                 if (duplicateInSameOrg)
                 {
-                    errors.Add("Mosque name already exists in this organization.");
+                    return new ResponseResult("Fail",
+                        "Mosque name already exists in this organization.");
                 }
 
-                if (data.Any(x => x.Name == mosque.Name))
-                {
-                    errors.Add("Mosque name already exists.");
-                }
-
-                if (errors.Count > 0)
-                {
-                    return new ResponseResult("Fail", string.Join(" | ", errors));
-                }
-
-                // ✅ update
+                // ✅ UPDATE ALL FIELDS
+                existing.OrganizationId = mosque.OrganizationId;
+                existing.Name = mosque.Name;
                 existing.Address = mosque.Address;
                 existing.StreetName = mosque.StreetName;
                 existing.Area = mosque.Area;
                 existing.MosqueImam = mosque.MosqueImam;
                 existing.ContactNo = mosque.ContactNo;
                 existing.MosqueType = mosque.MosqueType;
+                existing.EstablishedDate = mosque.EstablishedDate;
+                existing.Established_Hijri = mosque.Established_Hijri;
 
                 await _context.SaveChangesAsync();
 

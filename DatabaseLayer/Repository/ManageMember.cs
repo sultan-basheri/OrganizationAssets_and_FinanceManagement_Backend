@@ -96,24 +96,35 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.Members.Select(o => new
+                var members = await _context.Members
+                    .Select(o => new
+                    {
+                        o.Id,
+                        o.OrganizationId,
+                        o.FullName,
+                        o.ContactNo,
+                        o.AlternateNo,
+                        o.Email,
+                        o.Role,
+                        o.JoiningDate,
+                        o.CreatedAt,
+                        o.Status,
+                    })
+                    .ToListAsync();
+
+                var organizations = await _context.OrganizationMaster
+                    .Select(a => new
+                    {
+                        a.Id,
+                        a.Name
+                    })
+                    .ToListAsync();
+
+                return new ResponseResult("Ok", new
                 {
-                    o.Id,
-                    o.OrganizationId,
-                    o.FullName,
-                    o.ContactNo,
-                    o.AlternateNo,
-                    o.Email,
-                    o.Role,
-                    o.JoiningDate,
-                    o.CreatedAt,
-                    o.Status
-                }).ToListAsync();
-                if (result == null || !result.Any())
-                {
-                    return new ResponseResult("Fail", "Empty");
-                }
-                return new ResponseResult("Ok", result);
+                    Members = members,
+                    Organizations = organizations
+                });
             }
             catch (Exception exp)
             {

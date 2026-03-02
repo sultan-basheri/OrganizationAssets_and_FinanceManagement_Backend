@@ -1,6 +1,8 @@
 using BusinessLayer.Interface;
 using DatabaseLayer;
 using DatabaseLayer.Repository;
+using Microsoft.Extensions.FileProviders; // YEH ZARURI HAI STATIC FILES KE LIYE
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +27,7 @@ builder.Services.AddScoped<IDonation, ManageDonation>();
 builder.Services.AddScoped<ISalaryMaster, ManageSalaryMaster>();
 builder.Services.AddScoped<IWithdrawalSalary, ManageWithdrawalSalary>();
 builder.Services.AddScoped<IExpenseCategory, ManageExpenseCategory>();
-builder.Services.AddScoped<IExpenseMaster,ManageExpenseMaster>();
+builder.Services.AddScoped<IExpenseMaster, ManageExpenseMaster>();
 builder.Services.AddScoped<IPurchaseMaster, ManagePurchaseMaster>();
 builder.Services.AddScoped<IPurchasePayment, ManagePurchasePayment>();
 
@@ -33,11 +35,20 @@ builder.Services.AddScoped<IPurchasePayment, ManagePurchasePayment>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// CORS Config
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
-// --------------------
-// Middleware
-// --------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -50,6 +61,26 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
+var documentsPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "Documents");
+
+if (!Directory.Exists(documentsPath))
+{
+    Directory.CreateDirectory(documentsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(documentsPath),
+    RequestPath = "/Documents"
+});
+
+app.UseRouting();
+
+app.UseCors("AllowReactApp");
+
+// 5. AUTHORIZATION
 app.UseAuthorization();
 
 app.MapControllers();

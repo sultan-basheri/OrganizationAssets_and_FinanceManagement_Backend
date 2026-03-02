@@ -22,9 +22,9 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             try
             {
                 var result = await _organization.getOrganizationList();
-                if( result.Status.ToLower() == "ok")
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -40,9 +40,9 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             try
             {
                 var result = await _organization.getOrganizationById(Id);
-                if(result.Status.ToLower() == "ok")
+                if (result.Status.ToLower() == "ok")
                 {
-                    return Ok(result); 
+                    return Ok(result);
                 }
                 return BadRequest(result);
             }
@@ -65,17 +65,16 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                     });
                 }
 
-                //  Only if base64Data is provided then generate filename + upload
                 if (!string.IsNullOrWhiteSpace(organization.base64Data))
                 {
-                    string extension = organization.docType.ToLower() == "pdf" ? ".pdf" : ".png";
-                    string fileName = $"{Guid.NewGuid()}{extension}";
+                    string ext = organization.docType.ToLower().Replace(".", "");
+                    string extension = $".{ext}";
 
+                    string fileName = $"{Guid.NewGuid()}{extension}";
                     organization.docUrl = $"/Documents/{fileName}";
                 }
                 else
                 {
-                    // base64 empty => docUrl/docType null
                     organization.docUrl = null;
                     organization.docType = null;
                 }
@@ -84,13 +83,28 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
 
                 if (result.Status.ToLower() == "ok")
                 {
-                    // ✅ Upload only when base64 exists
-                    if (!string.IsNullOrWhiteSpace(organization.base64Data))
+                    if (!string.IsNullOrWhiteSpace(organization.base64Data) && !string.IsNullOrWhiteSpace(organization.docUrl))
                     {
                         string fileName = System.IO.Path.GetFileName(organization.docUrl);
 
-                        DocumentUploadClass duc = new DocumentUploadClass();
-                        await duc.SaveBase64DocumentAsync(fileName, organization.base64Data, organization.docType);
+                        string pureBase64 = organization.base64Data;
+                        if (pureBase64.Contains(","))
+                        {
+                            pureBase64 = pureBase64.Split(',')[1];
+                        }
+
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Documents");
+
+                        if (!Directory.Exists(folderPath))
+                        {
+                            Directory.CreateDirectory(folderPath);
+                        }
+
+                        string filePath = Path.Combine(folderPath, fileName);
+
+                        byte[] fileBytes = Convert.FromBase64String(pureBase64);
+                        await System.IO.File.WriteAllBytesAsync(filePath, fileBytes);
+
                     }
 
                     return Ok(result);
@@ -100,7 +114,8 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
             catch (Exception exp)
             {
-                return StatusCode(500, new ResponseResult("Fail", exp.Message));
+                // Custom ResponseResult ya anonymous object
+                return StatusCode(500, new { Status = "Fail", Result = exp.Message });
             }
         }
 
@@ -111,17 +126,19 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             {
                 if (Id != organization.Id)
                 {
-                    return BadRequest("Id Mismatch");
+                    return BadRequest(new { Status = "Fail", Result = "Id Mismatch" });
                 }
 
-                // ✅ old organization entity
                 var oldOrg = await _organization.getOrganizationEntityById(Id);
                 if (oldOrg == null)
                 {
-                    return NotFound(new ResponseResult("Fail", "Organization not found"));
+                    return NotFound(new { Status = "Fail", Result = "Organization not found" });
                 }
 
-                // ✅ base64 empty => docUrl/docType same
+                string oldFilePathToDelete = null;
+                string newFileNameToSave = null;
+                string pureBase64ToSave = null;
+
                 if (string.IsNullOrWhiteSpace(organization.base64Data))
                 {
                     organization.docUrl = oldOrg.docUrl;
@@ -129,35 +146,49 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 }
                 else
                 {
-                    // 1) old file delete
                     if (!string.IsNullOrWhiteSpace(oldOrg.docUrl))
                     {
                         string oldFileName = Path.GetFileName(oldOrg.docUrl);
-                        string oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Documents", oldFileName);
-
-                        if (System.IO.File.Exists(oldFilePath))
-                        {
-                            System.IO.File.Delete(oldFilePath);
-                        }
+                        oldFilePathToDelete = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Documents", oldFileName);
                     }
 
-                    // 2) new filename generate
-                    string extension = organization.docType.ToLower() == "pdf" ? ".pdf" : ".png";
-                    string fileName = $"{Guid.NewGuid()}{extension}";
+                    string ext = organization.docType.ToLower().Replace(".", "");
+                    string extension = $".{ext}";
+                    newFileNameToSave = $"{Guid.NewGuid()}{extension}";
 
-                    // 3) new docUrl set
-                    organization.docUrl = $"/Documents/{fileName}";
+                    organization.docUrl = $"/Documents/{newFileNameToSave}";
 
-                    // 4) save new file
-                    DocumentUploadClass duc = new DocumentUploadClass();
-                    await duc.SaveBase64DocumentAsync(fileName, organization.base64Data, organization.docType);
+                    // Base64 string ko clean karein (Prefix hatayein) taaki file corrupt na ho
+                    pureBase64ToSave = organization.base64Data;
+                    if (pureBase64ToSave.Contains(","))
+                    {
+                        pureBase64ToSave = pureBase64ToSave.Split(',')[1];
+                    }
                 }
 
-                // DB update
                 var result = await _organization.updateOrganization(Id, organization);
 
                 if (result.Status.ToLower() == "ok")
                 {
+                    if (!string.IsNullOrWhiteSpace(pureBase64ToSave) && !string.IsNullOrWhiteSpace(newFileNameToSave))
+                    {
+                        if (!string.IsNullOrWhiteSpace(oldFilePathToDelete) && System.IO.File.Exists(oldFilePathToDelete))
+                        {
+                            System.IO.File.Delete(oldFilePathToDelete);
+                        }
+
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Documents");
+                        if (!Directory.Exists(folderPath))
+                        {
+                            Directory.CreateDirectory(folderPath);
+                        }
+
+                        string newFilePath = Path.Combine(folderPath, newFileNameToSave);
+                        byte[] fileBytes = Convert.FromBase64String(pureBase64ToSave);
+
+                        await System.IO.File.WriteAllBytesAsync(newFilePath, fileBytes);
+                    }
+
                     return Ok(result);
                 }
 
@@ -165,7 +196,7 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
             catch (Exception exp)
             {
-                return StatusCode(500, new ResponseResult("Fail", exp.Message));
+                return StatusCode(500, new { Status = "Fail", Result = exp.Message });
             }
         }
     }

@@ -92,6 +92,7 @@ namespace DatabaseLayer.Repository
                     x.ContactNo,
                     x.AlternateNo,
                     x.Deposite,
+                    x.AadharNo,
                     x.DocumentType,
                     x.DocumentNo,
                     x.ReferenceName,
@@ -120,7 +121,7 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.PropertyRentAgreements.Select(x => new
+                var prAgreement = await _context.PropertyRentAgreements.Select(x => new
                 {
                     x.Id,
                     x.PropertyId,
@@ -132,6 +133,7 @@ namespace DatabaseLayer.Repository
                     x.ContactNo,
                     x.AlternateNo,
                     x.Deposite,
+                    x.AadharNo,
                     x.DocumentType,
                     x.DocumentNo,
                     x.ReferenceName,
@@ -140,11 +142,22 @@ namespace DatabaseLayer.Repository
                     x.DocExtension,
                     x.DocUrl
                 }).ToListAsync();
-                if (result == null || !result.Any())
+
+                var properties = await _context.Properties
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.PropertyType,
+                            a.RegNo,
+                            a.Address
+                        })
+                        .ToListAsync();
+
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Fail", "Record Not Found");
-                }
-                return new ResponseResult("Ok", result);
+                    PRAgreement = prAgreement,
+                    Property = properties
+                });
             }
             catch (Exception exp)
             {

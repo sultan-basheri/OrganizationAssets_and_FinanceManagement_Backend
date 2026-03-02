@@ -15,7 +15,7 @@ namespace DatabaseLayer.Repository
     public class ManageOfficeStaff : IOfficeStaff
     {
         private readonly ApplicationDbContext _context;
-        public ManageOfficeStaff(ApplicationDbContext context) 
+        public ManageOfficeStaff(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -25,17 +25,20 @@ namespace DatabaseLayer.Repository
             {
                 List<string> errors = new List<string>();
 
-                var existing = await _context.OfficeStaffs.FirstOrDefaultAsync(x => x.Id == Id);
+                var existing = await _context.OfficeStaffs
+                    .FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (existing == null)
                     return new ResponseResult("Fail", "OfficeStaff not found");
 
-                if (await _context.OfficeStaffs.AnyAsync(x => x.Email == officeStaff.Email && x.Id != Id))
+                if (await _context.OfficeStaffs
+                    .AnyAsync(x => x.Email == officeStaff.Email && x.Id != Id))
                 {
                     errors.Add("Email already exists");
                 }
 
-                if (await _context.OfficeStaffs.AnyAsync(x => x.ContactNo == officeStaff.ContactNo && x.Id != Id))
+                if (await _context.OfficeStaffs
+                    .AnyAsync(x => x.ContactNo == officeStaff.ContactNo && x.Id != Id))
                 {
                     errors.Add("Contact number already exists");
                 }
@@ -45,12 +48,14 @@ namespace DatabaseLayer.Repository
                     return new ResponseResult("Fail", string.Join(" | ", errors));
                 }
 
-                // update
+                // ✅ UPDATE ALL FIELDS
                 existing.FullName = officeStaff.FullName;
                 existing.Email = officeStaff.Email;
                 existing.ContactNo = officeStaff.ContactNo;
                 existing.Address = officeStaff.Address;
                 existing.Gender = officeStaff.Gender;
+                existing.DateOfJoining = officeStaff.DateOfJoining;
+                existing.Salary = officeStaff.Salary;
                 existing.UpdatedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();
@@ -62,28 +67,31 @@ namespace DatabaseLayer.Repository
                 return new ResponseResult("Fail", exp.Message);
             }
         }
-
         public async Task<ResponseResult> deactivateofficeStaff(int Id)
         {
             try
             {
-                var result = await _context.OfficeStaffs.FirstOrDefaultAsync(x => x.Id == Id);
+                var result = await _context.OfficeStaffs
+                    .FirstOrDefaultAsync(x => x.Id == Id);
+
                 if (result == null)
                 {
                     return new ResponseResult("Fail", $"OfficeStaff Id = {Id} Is Not Found");
                 }
 
-                result.Status = "De-Activate";
-                _context.OfficeStaffs.Update(result);
+                result.Status = result.Status == "Active"
+                                ? "Inactive"
+                                : "Active";
+
                 await _context.SaveChangesAsync();
-                return new ResponseResult("OK", "Successfully Saved");
+
+                return new ResponseResult("OK", "Status Updated Successfully");
             }
             catch (Exception exp)
             {
                 return new ResponseResult("Fail", exp.Message);
             }
         }
-
         public async Task<ResponseResult> getOfficeStaffList()
         {
             try
@@ -102,10 +110,7 @@ namespace DatabaseLayer.Repository
                     o.UpdatedAt,
                     o.Status
                 }).ToListAsync();
-                if (result == null || !result.Any())
-                {
-                    return new ResponseResult("Fail", "Empty");
-                }
+
                 return new ResponseResult("OK", result);
             }
             catch (Exception exp)
@@ -118,21 +123,26 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.OfficeStaffs.FirstOrDefaultAsync(x => x.Email == authentication.userName || x.ContactNo == authentication.userName);
+                var result = await _context.OfficeStaffs
+                    .FirstOrDefaultAsync(x =>
+                        x.Email == authentication.userName ||
+                        x.ContactNo == authentication.userName);
 
                 if (result == null)
                 {
-                    return new ResponseResult("Fail", "Not Exist");
+                    return new ResponseResult("Fail", "User not found");
                 }
+
                 bool isPasswordValid = BCrypt.Net.BCrypt.Verify(
                     authentication.password,
-                    result.Password   // hashed password from DB
+                    result.Password
                 );
 
                 if (!isPasswordValid)
                 {
                     return new ResponseResult("Fail", "Wrong username or password");
                 }
+
                 var office = new OfficeStaff
                 {
                     Id = result.Id,
@@ -148,7 +158,6 @@ namespace DatabaseLayer.Repository
                 return new ResponseResult("Fail", exp.Message);
             }
         }
-
         public async Task<ResponseResult> officeStaffProfile(int Id)
         {
             try

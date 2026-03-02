@@ -104,7 +104,7 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.Staffs.Select(x => new
+                var staffs = await _context.Staffs.Select(x => new
                 {
                     x.Id,
                     x.MosqueId,
@@ -124,11 +124,26 @@ namespace DatabaseLayer.Repository
                     x.OfficeStaffId,
                 }).ToListAsync();
 
-                if (result == null || !result.Any())
+                var organizations = await _context.OrganizationMaster
+                       .Select(a => new
+                       {
+                           a.Id,
+                           a.Name
+                       }).ToListAsync();
+
+                var mosques = await _context.Mosques
+                       .Select(a => new
+                       {
+                           a.Id,
+                           a.Name
+                       }).ToListAsync();
+
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Fail", "Empty");
-                }
-                return new ResponseResult("Ok", result);
+                    Staffs = staffs,
+                    Organizations = organizations,
+                    Mosques = mosques
+                });
             }
             catch (Exception exp)
             {

@@ -91,7 +91,7 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.RentMasters.Select(x => new
+                var rent = await _context.RentMasters.Select(x => new
                 {
                     x.Id,
                     x.PropertyRentAgreementId,
@@ -104,11 +104,34 @@ namespace DatabaseLayer.Repository
                     x.UpdatedAt,
                     x.Remark
                 }).ToListAsync();
-                if(result == null !|| !result.Any())
+                var properties = await _context.Properties
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.PropertyType,
+                            a.RegNo,
+                            a.Address
+                        })
+                        .ToListAsync();
+
+                var agreement = await _context.PropertyRentAgreements
+                         .Select(a => new
+                         {
+                             a.Id,
+                             a.FullName,
+                             a.ContactNo,
+                             a.DateFrom,
+                             a.DateTo,
+                             a.Deposite
+                         })
+                         .ToListAsync();
+
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Ok","Data not Found");
-                }
-                return new ResponseResult("Ok", result);
+                    Rent = rent,
+                    Property = properties,
+                    PRAgreement = agreement
+                });
             }
             catch (Exception exp)
             {

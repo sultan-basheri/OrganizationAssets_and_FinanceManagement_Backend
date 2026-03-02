@@ -49,7 +49,7 @@ namespace BusinessLayer.Model
         public string Gender { get; set; } = string.Empty;
         [Required(ErrorMessage = "Salary is required")]
         public decimal Salary { get; set; }
-        public string Password { get; set; } = string.Empty;
+        public string? Password { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
         public string Status { get; set; } = string.Empty;

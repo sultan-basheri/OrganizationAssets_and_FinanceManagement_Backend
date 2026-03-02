@@ -23,28 +23,35 @@ namespace DatabaseLayer.Repository
             try
             {
                 if (financialYear == null)
-                    return new ResponseResult("Fail", "Please fill all the fields");
+                    return new ResponseResult("Fail", "Please fill all fields");
 
                 List<string> errors = new();
-                var data = await _context.FinancialYears.ToListAsync();
 
-                if(data.Any(x => x.DateFrom == financialYear.DateFrom))
+                // Validate date range
+                if (financialYear.DateFrom > financialYear.DateTo)
                 {
-                    errors.Add("DateFrom already exists");
+                    errors.Add("Date From cannot be greater than Date To");
                 }
 
-                if (data.Any(x => x.DateTo == financialYear.DateTo))
-                {
-                    errors.Add("DateTo already exists");
-                }
-                if (data.Any(x => x.YearName == financialYear.YearName))
+                // Duplicate checks
+                if (await _context.FinancialYears
+                    .AnyAsync(x => x.YearName == financialYear.YearName))
                 {
                     errors.Add("Year Name already exists");
                 }
+
+                if (await _context.FinancialYears.AnyAsync(x =>
+                    financialYear.DateFrom <= x.DateTo &&
+                    financialYear.DateTo >= x.DateFrom))
+                {
+                    errors.Add("Financial Year overlaps with existing year");
+                }
+
                 if (errors.Count > 0)
                 {
                     return new ResponseResult("Fail", string.Join(" | ", errors));
                 }
+
                 await _context.FinancialYears.AddAsync(financialYear);
                 await _context.SaveChangesAsync();
 
@@ -68,10 +75,7 @@ namespace DatabaseLayer.Repository
                     x.CreatedAt,
                     x.OfficeStaffId
                 }).ToListAsync();
-                if (result == null || !result.Any())
-                {
-                    return new ResponseResult("Fail", "Data Not Found");
-                }
+                
                 return new ResponseResult("Ok", result);
             }
             catch (Exception exp)
@@ -92,7 +96,7 @@ namespace DatabaseLayer.Repository
                     x.CreatedAt,
                     x.OfficeStaffId
                 }).FirstOrDefaultAsync(x => x.Id == Id);
-                if (result == null )
+                if (result == null)
                 {
                     return new ResponseResult("Fail", "Financial Year Not Exist");
                 }
@@ -109,31 +113,40 @@ namespace DatabaseLayer.Repository
             {
                 List<string> errors = new List<string>();
 
-                var data = await _context.FinancialYears.ToListAsync();
-                var result = await _context.FinancialYears.FirstOrDefaultAsync(x => x.Id == Id);
+                var result = await _context.FinancialYears
+                    .FirstOrDefaultAsync(x => x.Id == Id);
+
                 if (result == null)
                 {
                     return new ResponseResult("Fail", "Financial Year not found");
                 }
-                if (data.Any(x => x.DateFrom == financialYear.DateFrom))
+
+                // 🔥 Exclude current record from duplicate check
+                var exists = await _context.FinancialYears
+                    .Where(x => x.Id != Id)
+                    .ToListAsync();
+
+                if (exists.Any(x => x.DateFrom == financialYear.DateFrom))
                 {
                     errors.Add("DateFrom already exists");
                 }
 
-                if (data.Any(x => x.DateTo == financialYear.DateTo))
+                if (exists.Any(x => x.DateTo == financialYear.DateTo))
                 {
                     errors.Add("DateTo already exists");
                 }
-                if (data.Any(x => x.YearName == financialYear.YearName))
+
+                if (exists.Any(x => x.YearName == financialYear.YearName))
                 {
                     errors.Add("Year Name already exists");
                 }
+
                 if (errors.Count > 0)
                 {
                     return new ResponseResult("Fail", string.Join(" | ", errors));
                 }
 
-                // ✅ update
+                // ✅ Update values
                 result.DateFrom = financialYear.DateFrom;
                 result.DateTo = financialYear.DateTo;
                 result.YearName = financialYear.YearName;

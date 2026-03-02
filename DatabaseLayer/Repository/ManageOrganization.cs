@@ -88,6 +88,7 @@ namespace DatabaseLayer.Repository
             {
                 var result = await _context.OrganizationMaster.Select(x=> new
                 {
+                    x.Id,
                     x.Name,
                     x.Address,
                     x.TrustNo,

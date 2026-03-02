@@ -73,10 +73,10 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             try
             {
                 var result = await _officeStaff.officeStaffAuthentication(authentication);
+
                 if (result.Status.ToLower() == "ok")
-                {
                     return Ok(result);
-                }
+
                 return BadRequest(result);
             }
             catch (Exception exp)

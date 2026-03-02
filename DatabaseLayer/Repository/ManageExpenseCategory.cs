@@ -28,6 +28,10 @@ namespace DatabaseLayer.Repository
                 {
                     error.Add("Invalid OfficeStaff. Office Staff does not exist.");
                 }
+                if(await _context.ExpenseCategories.AnyAsync(e=>e.Name == expenseCategory.Name))
+                {
+                     error.Add("Expense Category Already Exists");
+                }
                 if (error.Count == 0)
                 {
                     _context.ExpenseCategories.Add(expenseCategory);
@@ -91,12 +95,22 @@ namespace DatabaseLayer.Repository
         {
             try
             {
+                List<string> error = new List<string>();
                 var result = await _context.ExpenseCategories.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (result == null)
                 {
                     return new ResponseResult("Fail", "Expense Category Not Found");
                 }
+                if (await _context.ExpenseCategories.AnyAsync(e => e.Name == expenseCategory.Name && e.Id != Id))
+                {
+                    error.Add("Expense Category Already Exists");
+                }
+                if (error.Count != 0)
+                {
+                    return new ResponseResult("Fail", string.Join(", ", error));
+                }
+
                 result.Name = expenseCategory.Name;
                
                 await _context.SaveChangesAsync();

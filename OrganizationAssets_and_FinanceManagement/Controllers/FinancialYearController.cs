@@ -87,5 +87,22 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
+        [HttpPut("deactive-FinancialYear/{Id:int}")]
+        public async Task<IActionResult> deactivateFinancialYear(int Id)
+        {
+            try
+            {
+                var result = await _financialYear.deactivateFinancialYear(Id);
+                if (result.Status.ToLower() == "ok")
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            catch (Exception exp)
+            {
+                return StatusCode(500, new ResponseResult("Fail", exp.Message));
+            }
+        }
     }
 }

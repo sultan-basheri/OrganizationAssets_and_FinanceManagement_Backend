@@ -86,5 +86,28 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
+        [HttpGet("GetNextRentPeriod/{agreementId}")]
+        public async Task<IActionResult> GetNextRentPeriod(int agreementId)
+        {
+            try
+            {
+                var result = await _rentMaster
+                    .GetNextRentPeriod(agreementId);
+
+                return Ok(new
+                {
+                    status = "Ok",
+                    result
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    status = "Error",
+                    result = ex.Message
+                });
+            }
+        }
     }
 }

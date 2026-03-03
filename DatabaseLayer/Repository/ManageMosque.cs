@@ -77,7 +77,6 @@ namespace DatabaseLayer.Repository
                     x.Address,
                     x.StreetName,
                     x.Area,
-                    x.MosqueImam,
                     x.ContactNo,
                     x.OrganizationId,
                     x.EstablishedDate,
@@ -109,7 +108,6 @@ namespace DatabaseLayer.Repository
                     x.Address,
                     x.StreetName,
                     x.Area,
-                    x.MosqueImam,
                     x.ContactNo,
                     x.EstablishedDate,
                     x.Established_Hijri,
@@ -167,7 +165,6 @@ namespace DatabaseLayer.Repository
                 existing.Address = mosque.Address;
                 existing.StreetName = mosque.StreetName;
                 existing.Area = mosque.Area;
-                existing.MosqueImam = mosque.MosqueImam;
                 existing.ContactNo = mosque.ContactNo;
                 existing.MosqueType = mosque.MosqueType;
                 existing.EstablishedDate = mosque.EstablishedDate;

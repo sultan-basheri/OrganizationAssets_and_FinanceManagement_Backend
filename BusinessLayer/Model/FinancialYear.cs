@@ -36,6 +36,7 @@ namespace BusinessLayer.Model
         public int OfficeStaffId { get; set; }   
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public string Status { get; set; } = string.Empty;
 
         public ICollection<Donation> DonationFYear { get; set; }
         public ICollection<SalaryMaster> SalaryMasterFYear { get; set; }

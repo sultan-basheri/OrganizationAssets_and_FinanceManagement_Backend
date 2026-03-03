@@ -16,5 +16,6 @@ namespace BusinessLayer.Interface
         public Task<ResponseResult> signUpofficeStaff(OfficeStaff officeStaff);
         public Task<ResponseResult> deactivateofficeStaff(int Id);
         public Task<ResponseResult> updatePassword(Authentication authentication);
+        public Task<ResponseResult> forgetPassword(Authentication authentication);
     }
 }

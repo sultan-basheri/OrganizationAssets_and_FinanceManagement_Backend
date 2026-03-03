@@ -13,5 +13,6 @@ namespace BusinessLayer.Interface
         public Task<ResponseResult> GetFinancialYearById(int Id);
         public Task<ResponseResult> AddFinancialYear(FinancialYear financialYear);
         public Task<ResponseResult> UpdateFinancialYear(int Id, FinancialYear financialYear);
+        public Task<ResponseResult> deactivateFinancialYear(int Id);
     }
 }

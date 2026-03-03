@@ -14,5 +14,6 @@ namespace BusinessLayer.Interface
         public Task<ResponseResult> signUpAdmin(Admin admin);
         public Task<ResponseResult> deactivateAdmin(int Id);
         public Task<ResponseResult> updatePassword(Authentication authentication);
+        public Task<ResponseResult> forgetPassword(Authentication authentication);
     }
 }

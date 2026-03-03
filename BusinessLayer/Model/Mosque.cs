@@ -31,9 +31,6 @@ namespace BusinessLayer.Model
         [Required(ErrorMessage = "Area is required")]
         public string Area { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Imam name is required")]
-        public string MosqueImam { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "Contact number is required")]
         [Phone(ErrorMessage = "Invalid Contact number")]
         [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Contact number must be 10 digits")]

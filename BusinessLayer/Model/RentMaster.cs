@@ -24,7 +24,9 @@ namespace BusinessLayer.Model
         public string PaymentType { get; set; } = string.Empty;
         // Example: Cash, UPI, Bank Transfer
 
-        public string? Reference { get; set; }  
+        public string? Reference { get; set; }
+        public DateOnly DateFrom { get; set; }
+        public DateOnly DateTo { get; set; }
 
         [Required]
         public DateOnly PaymentDate { get; set; } 

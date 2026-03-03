@@ -67,11 +67,13 @@ namespace DatabaseLayer.Repository
                     x.Id,
                     x.PropertyRentAgreementId,
                     x.RentAmount,
+                    x.DateFrom,
+                    x.DateTo,
                     x.PaymentType,
                     x.Reference,
                     x.PaymentDate,
                     x.OfficeStaffId,
-                    x.CreatedAt, 
+                    x.CreatedAt,
                     x.UpdatedAt,
                     x.Remark
                 }).FirstOrDefaultAsync(x => x.Id == Id);
@@ -98,6 +100,8 @@ namespace DatabaseLayer.Repository
                     x.RentAmount,
                     x.PaymentType,
                     x.Reference,
+                    x.DateFrom,
+                    x.DateTo,
                     x.PaymentDate,
                     x.OfficeStaffId,
                     x.CreatedAt,
@@ -192,5 +196,59 @@ namespace DatabaseLayer.Repository
             }
         }
 
+        public async Task<ResponseResult> GetNextRentPeriod(int agreementId)
+        {
+            try
+            {
+            
+                var agreement = await _context.PropertyRentAgreements
+                    .FirstOrDefaultAsync(x => x.Id == agreementId);
+
+                if (agreement == null)
+                    return new ResponseResult("Fail", "Agreement not found");
+
+                var existingRecords = await _context.RentMasters
+                    .Where(x => x.PropertyRentAgreementId == agreementId)
+                    .OrderBy(x => x.DateFrom)
+                    .ToListAsync();
+
+                decimal totalPaid = existingRecords.Sum(x => x.RentAmount);
+
+                DateOnly nextStartDate = agreement.DateFrom;
+
+                foreach (var record in existingRecords)
+                {
+                    if (record.DateFrom > nextStartDate)
+                    {
+                        break; 
+                    }
+                    nextStartDate = record.DateTo.AddDays(1);
+                }
+                if (nextStartDate > agreement.DateTo)
+                {
+                    return new ResponseResult("Fail", "Agreement rent period is already completed.");
+                }
+
+                // 5. Next End Date (1 mahina minus 1 din)
+                DateOnly nextEndDate = nextStartDate.AddMonths(1).AddDays(-1);
+                if (nextEndDate > agreement.DateTo)
+                {
+                    nextEndDate = agreement.DateTo;
+                }
+
+                return new ResponseResult("Ok", new
+                {
+                    dateFrom = nextStartDate.ToString("yyyy-MM-dd"),
+                    dateTo = nextEndDate.ToString("yyyy-MM-dd"),
+                    actualRentAmount = agreement.RentAmount,
+                    depositAmount = agreement.Deposite,
+                    totalPaidAmount = totalPaid
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ResponseResult("Fail", ex.Message);
+            }
+        }
     }
 }

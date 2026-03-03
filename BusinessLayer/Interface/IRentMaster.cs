@@ -13,5 +13,6 @@ namespace BusinessLayer.Interface
         public Task<ResponseResult> GetRentMasterById(int Id);
         public Task<ResponseResult> addRentMaster(RentMaster rentMaster);
         public Task<ResponseResult> updateRentMaster(int Id, RentMaster rentMaster);
+        public Task<ResponseResult> GetNextRentPeriod(int agreementId);
     }
 }

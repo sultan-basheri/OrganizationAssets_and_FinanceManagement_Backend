@@ -73,7 +73,8 @@ namespace DatabaseLayer.Repository
                     x.DateFrom,
                     x.DateTo,
                     x.CreatedAt,
-                    x.OfficeStaffId
+                    x.OfficeStaffId,
+                    x.Status
                 }).ToListAsync();
                 
                 return new ResponseResult("Ok", result);
@@ -94,6 +95,7 @@ namespace DatabaseLayer.Repository
                     x.DateFrom,
                     x.DateTo,
                     x.CreatedAt,
+                    x.Status,
                     x.OfficeStaffId
                 }).FirstOrDefaultAsync(x => x.Id == Id);
                 if (result == null)
@@ -157,6 +159,37 @@ namespace DatabaseLayer.Repository
             }
             catch (Exception exp)
             {
+                return new ResponseResult("Fail", exp.Message);
+            }
+        }
+
+        public async Task<ResponseResult> deactivateFinancialYear(int Id)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var financialYearToActivate = await _context.FinancialYears
+                    .FirstOrDefaultAsync(x => x.Id == Id);
+
+                if (financialYearToActivate == null)
+                {
+                    return new ResponseResult("Fail", $"FinancialYear Id = {Id} Is Not Found");
+                }
+
+                await _context.FinancialYears
+                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.Status, "Inactive"));
+
+                financialYearToActivate.Status = "Active";
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return new ResponseResult("OK", "Financial Year Activated Successfully");
+            }
+            catch (Exception exp)
+            {
+                await transaction.RollbackAsync();
                 return new ResponseResult("Fail", exp.Message);
             }
         }

@@ -139,5 +139,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
+        [HttpPost("forgetPassword")]
+        public async Task<IActionResult> ForgetPassword([FromBody] Authentication authentication)
+        {
+            var result = await _officeStaff.forgetPassword(authentication);
+            return Ok(result);
+        }
     }
 }

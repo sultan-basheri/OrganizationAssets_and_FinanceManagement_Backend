@@ -138,12 +138,13 @@ namespace DatabaseLayer.Repository
 
                 var result = await _context.Properties.FirstOrDefaultAsync(x => x.Id == Id);
                 var data = await _context.Properties.ToListAsync();
+
                 if (result == null)
                 {
                     return new ResponseResult("Fail", "Property not found");
                 }
 
-                if (data.Any(x => x.RegNo == properties.RegNo))
+                if (data.Any(x => x.RegNo == properties.RegNo && x.Id != Id))
                 {
                     errors.Add("Registration Number Already Exist");
                 }
@@ -162,6 +163,7 @@ namespace DatabaseLayer.Repository
                 result.MeasurementUnit = properties.MeasurementUnit;
                 result.DocUrl = properties.DocUrl;
                 result.DocType = properties.DocType;
+
                 await _context.SaveChangesAsync();
 
                 return new ResponseResult("Ok", "Update successful");

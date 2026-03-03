@@ -259,5 +259,84 @@ namespace DatabaseLayer.Repository
                 return new ResponseResult("Fail", exp.Message);
             }
         }
+        public async Task<ResponseResult> forgetPassword(Authentication authentication)
+        {
+            try
+            {
+                if (authentication == null || string.IsNullOrEmpty(authentication.Email))
+                {
+                    return new ResponseResult("Fail", "Email is required");
+                }
+
+                // Check if Email Exists
+                var admin = await _context.AdminMaster
+                                          .FirstOrDefaultAsync(x => x.Email == authentication.Email);
+
+                if (admin == null)
+                {
+                    return new ResponseResult("Fail", "Email does not exist");
+                }
+
+                // Generate Auto Password
+                const string chars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789@#";
+                Random random = new Random();
+
+                string autoPassword = new string(
+                    Enumerable.Repeat(chars, 8)
+                    .Select(s => s[random.Next(s.Length)])
+                    .ToArray()
+                );
+
+                // Hash Password
+                admin.Password = BCrypt.Net.BCrypt.HashPassword(autoPassword);
+
+                _context.AdminMaster.Update(admin);
+                await _context.SaveChangesAsync();
+
+                // Send Email
+                var mail = new MailMessage();
+                mail.To.Add(admin.Email);
+                mail.From = new MailAddress("TankariyaTrust@gmail.com");
+                mail.Subject = "Reset Password - Admin Account";
+                mail.Body = $@"
+                    Hello {admin.FullName},
+
+                    Your password has been reset successfully.
+                   
+                    You can login using ANY ONE
+                    of the following:
+
+                        1️) Email + Password
+                           Email    : {admin.Email}
+                           Password : {autoPassword}
+
+                        2️) Contact Number + Password
+                           Contact  : {admin.ContactNo}
+                           Password : {autoPassword}
+
+                    Please change your password after login.
+
+                    Thank You.
+                    ";
+                mail.IsBodyHtml = false;
+
+                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587)
+                {
+                    Credentials = new NetworkCredential(
+                        "sultantankariawala@gmail.com",
+                        "jkkfzlqobpoamecv"
+                    ),
+                    EnableSsl = true
+                };
+
+                smtp.Send(mail);
+
+                return new ResponseResult("OK", "New password sent to your email");
+            }
+            catch (Exception ex)
+            {
+                return new ResponseResult("Fail", ex.Message);
+            }
+        }
     }
 }

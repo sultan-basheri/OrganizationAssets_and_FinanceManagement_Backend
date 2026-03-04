@@ -124,6 +124,9 @@ namespace DatabaseLayer.Repository
                         x.Email == authentication.userName ||
                         x.ContactNo == authentication.userName);
 
+                var financialYear = await _context.FinancialYears
+                    .FirstOrDefaultAsync(x => x.Status == "Active" || x.Status == "1" || x.Status == "true");
+
                 if (result == null)
                 {
                     return new ResponseResult("Fail", "User not found");
@@ -139,15 +142,19 @@ namespace DatabaseLayer.Repository
                     return new ResponseResult("Fail", "Wrong username or password");
                 }
 
-                var office = new OfficeStaff
+
+                var responseData = new
                 {
-                    Id = result.Id,
-                    FullName = result.FullName,
-                    ContactNo = result.ContactNo,
-                    Email = result.Email
+                    id = result.Id,
+                    fullName = result.FullName,
+                    contactNo = result.ContactNo,
+                    email = result.Email,
+
+                    activeFinancialYearId = financialYear != null ? financialYear.Id : 0,
+                    activeFinancialYearName = financialYear != null ? financialYear.YearName : ""
                 };
 
-                return new ResponseResult("OK", office);
+                return new ResponseResult("Ok", responseData);
             }
             catch (Exception exp)
             {

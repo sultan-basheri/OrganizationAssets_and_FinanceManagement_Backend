@@ -46,7 +46,7 @@ namespace BusinessLayer.Model
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [NotMapped]
-        public string base64Data { get; set; }
+        public string? base64Data { get; set; }
         public string? docType { get; set; }
         public string? docUrl { get; set; }
 

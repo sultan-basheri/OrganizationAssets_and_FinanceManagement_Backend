@@ -128,14 +128,17 @@ namespace DatabaseLayer.Repository
                        .Select(a => new
                        {
                            a.Id,
-                           a.Name
+                           a.Name,
                        }).ToListAsync();
 
                 var mosques = await _context.Mosques
                        .Select(a => new
                        {
                            a.Id,
-                           a.Name
+                           a.Name,
+                           a.Address,
+                           a.OrganizationId, 
+                           OrganizationName = a.OrgMosque.Name 
                        }).ToListAsync();
 
                 return new ResponseResult("Ok", new
@@ -150,7 +153,6 @@ namespace DatabaseLayer.Repository
                 return new ResponseResult("Fail", exp.Message);
             }
         }
-
         public async Task<ResponseResult> UpdateStaff(int Id, Staff staff)
         {
             try

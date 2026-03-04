@@ -22,7 +22,7 @@ namespace BusinessLayer.Model
        
         public virtual Mosque? Mosque { get; set; }
 
-        public int MosqueId { get; set; }   
+        public int? MosqueId { get; set; }   
 
        
         public virtual Organization? Organization { get; set; }

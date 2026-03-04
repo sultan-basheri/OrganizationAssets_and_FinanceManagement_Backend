@@ -38,18 +38,10 @@ namespace DatabaseLayer.Repository
                 {
                     error.Add("Invalid Organization. Organization does not exist.");
                 }
-                if (!OffExists)
-                {
-                    error.Add("Invalid OfficeStaff. Office Staff does not exist.");
-                }
 
                 if (!FYearExist)
                 {
                     error.Add("Invalid Financial Year. Financial Year does not exist.");
-                }
-                if (!StaffExist)
-                {
-                    error.Add("Invalid Staff. Staff does not exist.");
                 }
                 if (error.Count == 0)
                 {
@@ -100,7 +92,7 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.Donations.Select(x => new {
+                var donation = await _context.Donations.Select(x => new {
                     x.Id,
                     x.OrganizationId,
                     x.StaffId,
@@ -114,11 +106,43 @@ namespace DatabaseLayer.Repository
                     x.OfficeStaffId,
                     x.FinancialYearId,
                 }).ToListAsync();
-                if (result == null || !result.Any())
+
+                var staff = await _context.Staffs
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.FullName,
+                            a.MosqueId,
+                            a.OrganizationId,
+                            OrganizationName = a.Organization.Name,
+                            MosqueName = a.Mosque.Name
+
+                        }).ToListAsync();
+                var organizations = await _context.OrganizationMaster
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.Name,
+                        }).ToListAsync();
+
+                var mosques = await _context.Mosques
+                       .Select(a => new
+                       {
+                           a.Id,
+                           a.Name,
+                           a.Address,
+                           a.OrganizationId,
+                           OrganizationName = a.OrgMosque.Name
+                       }).ToListAsync();
+
+
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Fail", "Donation List Not Found");
-                }
-                return new ResponseResult("Ok", result);
+                    Donations = donation,
+                    Staff = staff,
+                    Organizations = organizations,
+                    Mosques = mosques,
+                });
             }
             catch (Exception exp)
             {
@@ -152,6 +176,8 @@ namespace DatabaseLayer.Repository
                 }
 
                 result.StaffId = donation.StaffId;
+                result.MosqueId = donation.MosqueId;
+                result.OrganizationId = donation.OrganizationId;
                 result.DonorThrough = donation.DonorThrough;
                 result.Amount = donation.Amount;
                 result.DonationType = donation.DonationType;

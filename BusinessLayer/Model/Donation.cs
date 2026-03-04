@@ -15,11 +15,14 @@ namespace BusinessLayer.Model
 
         public virtual Organization? Organization { get; set; } 
        
-        public int OrganizationId { get; set; }   
+        public int OrganizationId { get; set; }
+        public virtual Mosque? Mosque { get; set; }
+
+        public int? MosqueId { get; set; }
 
         public virtual Staff? Staff { get; set; }
 
-        public int StaffId { get; set; }   
+        public int? StaffId { get; set; }   
 
         public string? DonorThrough { get; set; }   
 

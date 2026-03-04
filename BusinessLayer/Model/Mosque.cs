@@ -10,6 +10,7 @@ namespace BusinessLayer.Model
         public Mosque()
         {
             EnrollStaffMosque = new HashSet<Staff>();
+            EnrollMosqDonation= new HashSet<Donation>();
         }
         public int Id { get; set; }
 
@@ -41,5 +42,6 @@ namespace BusinessLayer.Model
         [Required(ErrorMessage = "Mosque type is required")]
         public string MosqueType { get; set; } = string.Empty;
         public ICollection<Staff> EnrollStaffMosque { get; set; }
+        public ICollection<Donation> EnrollMosqDonation { get; set; }
     }
 }

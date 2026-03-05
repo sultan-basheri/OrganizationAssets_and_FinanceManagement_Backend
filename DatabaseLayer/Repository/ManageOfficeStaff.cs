@@ -142,7 +142,6 @@ namespace DatabaseLayer.Repository
                     return new ResponseResult("Fail", "Wrong username or password");
                 }
 
-
                 var responseData = new
                 {
                     id = result.Id,
@@ -151,7 +150,11 @@ namespace DatabaseLayer.Repository
                     email = result.Email,
 
                     activeFinancialYearId = financialYear != null ? financialYear.Id : 0,
-                    activeFinancialYearName = financialYear != null ? financialYear.YearName : ""
+                    activeFinancialYearName = financialYear != null ? financialYear.YearName : "",
+
+                    // Added DateFrom and DateTo formatted as strings for easy frontend consumption
+                    activeFinancialYearDateFrom = financialYear != null ? financialYear.DateFrom.ToString("dd-MM-yyyy") : null,
+                    activeFinancialYearDateTo = financialYear != null ? financialYear.DateTo.ToString("dd-MM-yyyy") : null
                 };
 
                 return new ResponseResult("Ok", responseData);

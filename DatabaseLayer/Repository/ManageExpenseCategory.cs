@@ -79,10 +79,6 @@ namespace DatabaseLayer.Repository
                     x.CreatedAt,
                     x.OfficeStaffId,
                 }).ToListAsync();
-                if (result == null || !result.Any())
-                {
-                    return new ResponseResult("Fail", "Expense Category List Not Found");
-                }
                 return new ResponseResult("Ok", result);
             }
             catch (Exception exp)

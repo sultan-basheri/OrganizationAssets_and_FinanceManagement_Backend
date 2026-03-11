@@ -58,9 +58,11 @@ namespace DatabaseLayer.Repository
                     mail.Body = $@"
                         Hello {admin.FullName},
 
-                        Your admin account has been created successfully.
+                        Your admin account has been
+                        created successfully.
 
-                        You can login using ANY ONE of the following:
+                        You can login using ANY ONE 
+                        of the following:
 
                         1️) Email + Password
                            Email    : {admin.Email}
@@ -70,7 +72,8 @@ namespace DatabaseLayer.Repository
                            Contact  : {admin.ContactNo}
                            Password : {autoPassword}
 
-                        Please change your password after first login.
+                        Please change your password after
+                        first login.
 
                         Thank you.
                         ";

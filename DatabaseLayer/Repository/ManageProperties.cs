@@ -3,12 +3,9 @@ using BusinessLayer.Model;
 using DatabaseLayer.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DatabaseLayer.Repository
 {
@@ -39,12 +36,13 @@ namespace DatabaseLayer.Repository
                     x.CreatedAt,
                     x.OfficeStaffId
                 }).ToListAsync();
+
                 var organizations = await _context.OrganizationMaster
                     .Select(a => new
-                        {
-                            a.Id,
-                            a.Name
-                        }).ToListAsync();
+                    {
+                        a.Id,
+                        a.Name
+                    }).ToListAsync();
 
                 return new ResponseResult("Ok", new
                 {
@@ -77,6 +75,7 @@ namespace DatabaseLayer.Repository
                     x.CreatedAt,
                     x.OfficeStaffId
                 }).FirstOrDefaultAsync(x => x.Id == Id);
+
                 if (result == null)
                 {
                     return new ResponseResult("Fail", $"Property Id = {Id} Not Exist");
@@ -104,6 +103,7 @@ namespace DatabaseLayer.Repository
                 bool orgExists = await _context.OrganizationMaster.AnyAsync(o => o.Id == properties.OrganizationId);
                 bool OffExists = await _context.OfficeStaffs.AnyAsync(o => o.Id == properties.OfficeStaffId);
                 var data = await _context.Properties.ToListAsync();
+
                 if (!orgExists)
                 {
                     error.Add("Invalid Organization. Organization does not exist.");
@@ -123,7 +123,7 @@ namespace DatabaseLayer.Repository
                     await _context.SaveChangesAsync();
                     return new ResponseResult("Ok", "Successfully Saved");
                 }
-                return new ResponseResult("Fail", string.Join(",", error));
+                return new ResponseResult("Fail", string.Join(" | ", error));
             }
             catch (Exception exp)
             {
@@ -163,6 +163,7 @@ namespace DatabaseLayer.Repository
                 result.MeasurementUnit = properties.MeasurementUnit;
                 result.DocUrl = properties.DocUrl;
                 result.DocType = properties.DocType;
+                result.OwnershipDate = properties.OwnershipDate;
 
                 await _context.SaveChangesAsync();
 

@@ -13,6 +13,6 @@ namespace BusinessLayer.Interface
         public Task<ResponseResult> getPurchaseById(int Id);
         public Task<PurchaseMaster?> getPurchaseEntityById(int id);
         public Task<ResponseResult> addPurchase(PurchaseMaster purchaseMaster);
-        public Task<ResponseResult> updatePurchaseDetail(int Id, PurchaseMaster purchaseMaster);
+        public Task<ResponseResult> updatePurchase(int Id, PurchaseMaster purchaseMaster);
     }
 }

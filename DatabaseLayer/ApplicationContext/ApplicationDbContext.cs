@@ -28,5 +28,7 @@ namespace DatabaseLayer.ApplicationContext
         public DbSet<ExpensesMaster> ExpensesMaster { get; set; }
         public DbSet<PurchaseMaster> PurchaseMasters { get; set; }
         public DbSet<PurchasePayment> PurchasePayments { get; set; }
+        public DbSet<PurchaseDetail> PurchaseDetails { get; set; }
+        public DbSet<Vendor> Vendor { get; set; }
     }
 }

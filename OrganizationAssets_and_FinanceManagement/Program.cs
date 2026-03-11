@@ -30,6 +30,8 @@ builder.Services.AddScoped<IExpenseCategory, ManageExpenseCategory>();
 builder.Services.AddScoped<IExpenseMaster, ManageExpenseMaster>();
 builder.Services.AddScoped<IPurchaseMaster, ManagePurchaseMaster>();
 builder.Services.AddScoped<IPurchasePayment, ManagePurchasePayment>();
+builder.Services.AddScoped<IPurchaseDetail, ManagePurchaseDetail>();
+builder.Services.AddScoped<IVendor, ManageVendor>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

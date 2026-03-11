@@ -89,7 +89,7 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.SalaryMaster.Select(x => new {
+                var salary = await _context.SalaryMaster.Select(x => new {
                     x.Id,
                     x.OrganizationId,
                     x.StaffId,
@@ -98,11 +98,30 @@ namespace DatabaseLayer.Repository
                     x.OfficeStaffId,
                     x.FinancialYearId,
                 }).ToListAsync();
-                if (result == null || !result.Any())
+                var staff = await _context.Staffs
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.FullName,
+                            a.Salary,
+                            a.MosqueId,
+                            a.OrganizationId,
+                            OrganizationName = a.Organization.Name,
+                            MosqueName = a.Mosque.Name
+
+                        }).ToListAsync();
+                var organizations = await _context.OrganizationMaster
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.Name,
+                        }).ToListAsync();
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Fail", "Salary List Not Found");
-                }
-                return new ResponseResult("Ok", result);
+                    Salary = salary,
+                    Staff = staff,
+                    Organizations = organizations,
+                });
             }
             catch (Exception exp)
             {

@@ -3,6 +3,7 @@ using BusinessLayer.Model;
 using DatabaseLayer.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -66,12 +67,9 @@ namespace DatabaseLayer.Repository
                 var result = await _context.PurchaseMasters.Select(x => new
                 {
                     x.Id,
+                    x.VendorId,
                     x.BillNo,
                     x.ChallanNo,
-                    x.BusinessName,
-                    x.ContactPerson,
-                    x.GSTIN,
-                    x.Address,
                     x.GrossAmount,
                     x.GSTType,
                     x.GSTPercentage,
@@ -84,7 +82,28 @@ namespace DatabaseLayer.Repository
                     x.OfficeStaffId,
                     x.FinancialYearId,
                     x.CreatedAt,
+
+                    PurDetail = x.PurDetail.Select(d => new {
+                        d.Id,
+                        d.Name,
+                        d.PurchaseAmount,
+                        d.Quantity,
+                        d.GrossAmount,
+                        d.GstPercentage,
+                        d.GstAmount,
+                        d.TotalAmount
+                    }).ToList(),
+
+                    PurPaymentMaster = x.PurPaymentMaster.Select(p => new {
+                        p.Id,
+                        p.PaymentType,
+                        p.Amount,
+                        p.PaymentDate,
+                        p.Remark
+                    }).ToList()
+
                 }).FirstOrDefaultAsync(x => x.Id == Id);
+
                 if (result == null)
                 {
                     return new ResponseResult("Fail", $"Purchase Id = {Id} Not Exist");
@@ -96,7 +115,6 @@ namespace DatabaseLayer.Repository
                 return new ResponseResult("Fail", exp.Message);
             }
         }
-
         public async Task<PurchaseMaster?> getPurchaseEntityById(int id)
         {
             return await _context.PurchaseMasters.FirstOrDefaultAsync(x => x.Id == id);
@@ -106,15 +124,12 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.PurchaseMasters.Select(x => new
+                var purmaster = await _context.PurchaseMasters.Select(x => new
                 {
                     x.Id,
+                    x.VendorId,
                     x.BillNo,
                     x.ChallanNo,
-                    x.BusinessName,
-                    x.ContactPerson,
-                    x.GSTIN,
-                    x.Address,
                     x.GrossAmount,
                     x.GSTType,
                     x.GSTPercentage,
@@ -127,13 +142,34 @@ namespace DatabaseLayer.Repository
                     x.OfficeStaffId,
                     x.FinancialYearId,
                     x.CreatedAt,
+                    PaidAmount = x.PurPaymentMaster.Sum(p => p.Amount),
                 }).ToListAsync();
 
-                if (result == null || !result.Any())
+                var organizations = await _context.OrganizationMaster
+                       .Select(a => new
+                       {
+                           a.Id,
+                           a.Name,
+                       }).ToListAsync();
+
+                var vendor = await _context.Vendor
+                       .Select(a => new
+                       {
+                           a.Id,
+                           a.BusinessName,
+                           a.ContactPerson,
+                           a.ContactNo,
+                           a.Email,
+                           a.Address,
+                           a.GstIn
+                       }).ToListAsync();
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Fail", "Purchase List Not Found");
-                }
-                return new ResponseResult("Ok", result);
+                    
+                    Organizations = organizations,
+                    PurMaster = purmaster,
+                    Vendor = vendor
+                });
             }
             catch (Exception exp)
             {
@@ -141,27 +177,25 @@ namespace DatabaseLayer.Repository
             }
         }
 
-        public async Task<ResponseResult> updatePurchaseDetail(int Id, PurchaseMaster purchaseMaster)
+        public async Task<ResponseResult> updatePurchase(int Id, PurchaseMaster purchaseMaster)
         {
             try
             {
-                List<string> errors = new List<string>();
+                // Include Products & Payments to modify them
+                var result = await _context.PurchaseMasters
+                    .Include(x => x.PurDetail)
+                    .Include(x => x.PurPaymentMaster)
+                    .FirstOrDefaultAsync(x => x.Id == Id);
 
-                var result = await _context.PurchaseMasters.FirstOrDefaultAsync(x => x.Id == Id);
-                var data = await _context.PurchaseMasters.ToListAsync();
                 if (result == null)
                 {
-                    return new ResponseResult("Fail", "Purachse Detail not found");
+                    return new ResponseResult("Fail", "Purchase Detail not found");
                 }
 
-
-                // ✅ update
+                // 1. Update Master Details
+                result.VendorId = purchaseMaster.VendorId;
                 result.BillNo = purchaseMaster.BillNo;
                 result.ChallanNo = purchaseMaster.ChallanNo;
-                result.BusinessName = purchaseMaster.BusinessName;
-                result.ContactPerson = purchaseMaster.ContactPerson;
-                result.GSTIN = purchaseMaster.GSTIN;
-                result.Address = purchaseMaster.Address;
                 result.GrossAmount = purchaseMaster.GrossAmount;
                 result.GSTType = purchaseMaster.GSTType;
                 result.GSTPercentage = purchaseMaster.GSTPercentage;
@@ -170,6 +204,15 @@ namespace DatabaseLayer.Repository
                 result.BillDate = purchaseMaster.BillDate;
                 result.DocType = purchaseMaster.DocType;
                 result.BillUrl = purchaseMaster.BillUrl;
+
+                // 2. Clear old list
+                _context.PurchaseDetails.RemoveRange(result.PurDetail);
+                _context.PurchasePayments.RemoveRange(result.PurPaymentMaster);
+
+                // 3. Add newly modified list
+                result.PurDetail = purchaseMaster.PurDetail;
+                result.PurPaymentMaster = purchaseMaster.PurPaymentMaster;
+
                 await _context.SaveChangesAsync();
 
                 return new ResponseResult("Ok", "Update successful");

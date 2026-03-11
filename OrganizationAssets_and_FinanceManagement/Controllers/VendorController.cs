@@ -7,19 +7,19 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SalaryMasterController : ControllerBase
+    public class VendorController : ControllerBase
     {
-        private readonly ISalaryMaster _salaryMaster;
-        public SalaryMasterController(ISalaryMaster salaryMaster)
+        private readonly IVendor _vendor;
+        public VendorController(IVendor vendor)
         {
-            _salaryMaster = salaryMaster;
+            _vendor = vendor;
         }
         [HttpGet]
-        public async Task<IActionResult> getSalaryMasterList()
+        public async Task<IActionResult> getVendorList()
         {
             try
             {
-                var result = await _salaryMaster.getSalaryMasterList();
+                var result = await _vendor.getVendorList();
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
@@ -32,11 +32,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpGet("{Id:int}")]
-        public async Task<IActionResult> getSalayMasterById(int Id)
+        public async Task<IActionResult> getVendorById(int Id)
         {
             try
             {
-                var result = await _salaryMaster.getSalaryMasterById(Id);
+                var result = await _vendor.getVendorById(Id);
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
@@ -49,15 +49,15 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> addSalaryMaster(SalaryMaster salaryMaster)
+        public async Task<IActionResult> addVendor(Vendor vendor)
         {
             try
             {
-                if(salaryMaster ==  null)
+                if (vendor == null)
                 {
                     return BadRequest("Please Fill All Details");
                 }
-                var result = await _salaryMaster.addSalaryMaster(salaryMaster);
+                var result = await _vendor.addVendor(vendor);
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
@@ -70,15 +70,15 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> updateSalaryMaster(int Id,[FromBody] SalaryMaster salaryMaster)
+        public async Task<IActionResult> updateVendor(int Id, Vendor vendor)
         {
             try
             {
-                if (Id != salaryMaster.Id)
+                if (Id != vendor.Id)
                 {
-                    return BadRequest("Salary Id Mismatch");
+                    return BadRequest("Id Mismatch");
                 }
-                var result = await _salaryMaster.updateSalaryMaster(Id, salaryMaster);
+                var result = await _vendor.updateVendor(Id, vendor);
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);

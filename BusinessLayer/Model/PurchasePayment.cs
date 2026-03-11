@@ -23,6 +23,8 @@ namespace BusinessLayer.Model
         public string PaymentType { get; set; } = string.Empty;
         // Example: Cash, Bank, UPI
 
+        public DateOnly PaymentDate { get; set; }
+
         public string? Remark { get; set; }
 
         public virtual Organization? Organization { get; set; }

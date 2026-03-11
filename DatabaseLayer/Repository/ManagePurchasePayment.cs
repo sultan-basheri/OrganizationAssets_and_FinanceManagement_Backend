@@ -70,6 +70,7 @@ namespace DatabaseLayer.Repository
                     x.OrganizationId,
                     x.Amount,
                     x.PaymentType,
+                    x.PaymentDate,
                     x.Remark,
                     x.OfficeStaffId,
                     x.FinancialYearId,
@@ -97,15 +98,12 @@ namespace DatabaseLayer.Repository
                     x.OrganizationId,
                     x.Amount,
                     x.PaymentType,
+                    x.PaymentDate,
                     x.Remark,
                     x.OfficeStaffId,
                     x.FinancialYearId,
                     x.CreatedAt,
                 }).ToListAsync();
-                if (result == null || !result.Any())
-                {
-                    return new ResponseResult("Fail", "Purchase Payment List Not Found");
-                }
                 return new ResponseResult("Ok", result);
             }
             catch (Exception exp)
@@ -126,6 +124,7 @@ namespace DatabaseLayer.Repository
                 }
                 result.Amount = purchasePayment.Amount;
                 result.PaymentType = purchasePayment.PaymentType;
+                result.PaymentDate = purchasePayment.PaymentDate;
                 result.Remark = purchasePayment.Remark;
 
                 await _context.SaveChangesAsync();

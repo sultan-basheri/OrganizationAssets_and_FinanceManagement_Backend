@@ -17,7 +17,7 @@ namespace BusinessLayer.Model
         [Key]
         public int Id { get; set; }   // PK
 
-       
+
         public virtual Organization? Organization { get; set; }
         public int OrganizationId { get; set; }   // FK → Organization
 
@@ -54,6 +54,6 @@ namespace BusinessLayer.Model
         public int OfficeStaffId { get; set; }   // FK → OfficeStaff
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public ICollection<PropertyRentAgreement> EnrollProPRA { get; set; }
+        public ICollection<PropertyRentAgreement>? EnrollProPRA { get; set; }
     }
 }

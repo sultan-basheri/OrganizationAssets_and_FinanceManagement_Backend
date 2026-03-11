@@ -152,9 +152,8 @@ namespace DatabaseLayer.Repository
                     activeFinancialYearId = financialYear != null ? financialYear.Id : 0,
                     activeFinancialYearName = financialYear != null ? financialYear.YearName : "",
 
-                    // Added DateFrom and DateTo formatted as strings for easy frontend consumption
-                    activeFinancialYearDateFrom = financialYear != null ? financialYear.DateFrom.ToString("dd-MM-yyyy") : null,
-                    activeFinancialYearDateTo = financialYear != null ? financialYear.DateTo.ToString("dd-MM-yyyy") : null
+                    activeFinancialDateFrom = financialYear != null ? financialYear.DateFrom.ToString("yyyy-MM-dd") : "",
+                    activeFinancialDateTo = financialYear != null ? financialYear.DateTo.ToString("yyyy-MM-dd") : ""
                 };
 
                 return new ResponseResult("Ok", responseData);

@@ -18,6 +18,7 @@ namespace BusinessLayer.Model
             EnrollSalaryMasterOrg = new HashSet<SalaryMaster>();
             EnrollPurchaseMasterOrg = new HashSet<PurchaseMaster>();
             EnrollPurchasePaymentOrg = new HashSet<PurchasePayment>();
+            EnrollExpMasterOrg = new HashSet<ExpensesMaster>();
         }
         public int Id { get; set; }
 
@@ -58,8 +59,7 @@ namespace BusinessLayer.Model
         public ICollection<SalaryMaster> EnrollSalaryMasterOrg { get;set; }
         public ICollection<PurchaseMaster> EnrollPurchaseMasterOrg { get; set; }
         public ICollection<PurchasePayment> EnrollPurchasePaymentOrg { get; set; }
-
-        
+        public ICollection<ExpensesMaster> EnrollExpMasterOrg { get; set; }
 
     }
 }

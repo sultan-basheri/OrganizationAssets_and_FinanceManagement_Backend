@@ -13,22 +13,16 @@ namespace BusinessLayer.Model
         public PurchaseMaster()
         {
             PurPaymentMaster = new HashSet<PurchasePayment>();
+            PurDetail = new HashSet<PurchaseDetail>();
         }
         [Key]
-        public int Id { get; set; }  
+        public int Id { get; set; } 
+        public virtual Vendor? Vendor { get; set; }
+        public int VendorId {  get; set; }
 
         public int? BillNo { get; set; }
 
         public string? ChallanNo { get; set; }
-
-        public string BusinessName { get; set; } = string.Empty;
-
-        public string? ContactPerson { get; set; }
-
-        public string? GSTIN { get; set; }
-
-        public string? Address { get; set; }
-
         public decimal GrossAmount { get; set; }
 
         public string GSTType { get; set; } = string.Empty;
@@ -67,5 +61,6 @@ namespace BusinessLayer.Model
 
 
         public ICollection<PurchasePayment> PurPaymentMaster { get; set; }
+        public ICollection<PurchaseDetail> PurDetail { get; set; }
     }
 }

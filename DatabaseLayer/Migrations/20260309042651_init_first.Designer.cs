@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260302032436_fifth")]
-    partial class fifth
+    [Migration("20260309042651_init_first")]
+    partial class init_first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,6 +85,9 @@ namespace DatabaseLayer.Migrations
                     b.Property<int>("FinancialYearId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MosqueId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OfficeStaffId")
                         .HasColumnType("int");
 
@@ -101,12 +104,14 @@ namespace DatabaseLayer.Migrations
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StaffId")
+                    b.Property<int?>("StaffId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FinancialYearId");
+
+                    b.HasIndex("MosqueId");
 
                     b.HasIndex("OfficeStaffId");
 
@@ -162,7 +167,13 @@ namespace DatabaseLayer.Migrations
                     b.Property<int>("FinancialYearId")
                         .HasColumnType("int");
 
+                    b.Property<int>("MosqueId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OfficeStaffId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrganizationId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaidTo")
@@ -185,7 +196,11 @@ namespace DatabaseLayer.Migrations
 
                     b.HasIndex("FinancialYearId");
 
+                    b.HasIndex("MosqueId");
+
                     b.HasIndex("OfficeStaffId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("ExpensesMaster");
                 });
@@ -209,6 +224,10 @@ namespace DatabaseLayer.Migrations
 
                     b.Property<int>("OfficeStaffId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("YearName")
                         .IsRequired()
@@ -556,7 +575,7 @@ namespace DatabaseLayer.Migrations
                     b.ToTable("PropertyRentAgreements");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Model.PurchaseMaster", b =>
+            modelBuilder.Entity("BusinessLayer.Model.PurchaseDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -564,8 +583,48 @@ namespace DatabaseLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("GrossAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GstAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GstPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PurchaseAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PurchaseMasterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseMasterId");
+
+                    b.ToTable("PurchaseDetails");
+                });
+
+            modelBuilder.Entity("BusinessLayer.Model.PurchaseMaster", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateOnly>("BillDate")
                         .HasColumnType("date");
@@ -576,14 +635,7 @@ namespace DatabaseLayer.Migrations
                     b.Property<string>("BillUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BusinessName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ChallanNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactPerson")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -597,9 +649,6 @@ namespace DatabaseLayer.Migrations
 
                     b.Property<decimal>("GSTAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("GSTIN")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("GSTPercentage")
                         .HasColumnType("decimal(18,2)");
@@ -620,6 +669,9 @@ namespace DatabaseLayer.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FinancialYearId");
@@ -627,6 +679,8 @@ namespace DatabaseLayer.Migrations
                     b.HasIndex("OfficeStaffId");
 
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("VendorId");
 
                     b.ToTable("PurchaseMasters");
                 });
@@ -653,6 +707,9 @@ namespace DatabaseLayer.Migrations
 
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
+
+                    b.Property<DateOnly>("PaymentDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("PaymentType")
                         .IsRequired()
@@ -805,7 +862,7 @@ namespace DatabaseLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MosqueId")
+                    b.Property<int?>("MosqueId")
                         .HasColumnType("int");
 
                     b.Property<int>("OfficeStaffId")
@@ -836,6 +893,41 @@ namespace DatabaseLayer.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Staffs");
+                });
+
+            modelBuilder.Entity("BusinessLayer.Model.Vendor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BusinessName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactPerson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GstIn")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vendor");
                 });
 
             modelBuilder.Entity("BusinessLayer.Model.WithdrawalSalary", b =>
@@ -893,6 +985,10 @@ namespace DatabaseLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BusinessLayer.Model.Mosque", "Mosque")
+                        .WithMany("EnrollMosqDonation")
+                        .HasForeignKey("MosqueId");
+
                     b.HasOne("BusinessLayer.Model.OfficeStaff", "OfficeStaff")
                         .WithMany("DonationsOff")
                         .HasForeignKey("OfficeStaffId")
@@ -907,11 +1003,11 @@ namespace DatabaseLayer.Migrations
 
                     b.HasOne("BusinessLayer.Model.Staff", "Staff")
                         .WithMany("DonationStaff")
-                        .HasForeignKey("StaffId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StaffId");
 
                     b.Navigation("FinancialYear");
+
+                    b.Navigation("Mosque");
 
                     b.Navigation("OfficeStaff");
 
@@ -945,9 +1041,21 @@ namespace DatabaseLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BusinessLayer.Model.Mosque", "Mosque")
+                        .WithMany("EnrollMosqExpMast")
+                        .HasForeignKey("MosqueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BusinessLayer.Model.OfficeStaff", "OfficeStaff")
                         .WithMany("ExpensesMasterOff")
                         .HasForeignKey("OfficeStaffId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BusinessLayer.Model.Organization", "Organization")
+                        .WithMany("EnrollExpMasterOrg")
+                        .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -955,7 +1063,11 @@ namespace DatabaseLayer.Migrations
 
                     b.Navigation("FinancialYear");
 
+                    b.Navigation("Mosque");
+
                     b.Navigation("OfficeStaff");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("BusinessLayer.Model.FinancialYear", b =>
@@ -1029,6 +1141,17 @@ namespace DatabaseLayer.Migrations
                     b.Navigation("Property");
                 });
 
+            modelBuilder.Entity("BusinessLayer.Model.PurchaseDetail", b =>
+                {
+                    b.HasOne("BusinessLayer.Model.PurchaseMaster", "PurchaseMaster")
+                        .WithMany("PurDetail")
+                        .HasForeignKey("PurchaseMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PurchaseMaster");
+                });
+
             modelBuilder.Entity("BusinessLayer.Model.PurchaseMaster", b =>
                 {
                     b.HasOne("BusinessLayer.Model.FinancialYear", "FinancialYear")
@@ -1049,11 +1172,19 @@ namespace DatabaseLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BusinessLayer.Model.Vendor", "Vendor")
+                        .WithMany("purVendor")
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("FinancialYear");
 
                     b.Navigation("OfficeStaff");
 
                     b.Navigation("Organization");
+
+                    b.Navigation("Vendor");
                 });
 
             modelBuilder.Entity("BusinessLayer.Model.PurchasePayment", b =>
@@ -1149,9 +1280,7 @@ namespace DatabaseLayer.Migrations
                 {
                     b.HasOne("BusinessLayer.Model.Mosque", "Mosque")
                         .WithMany("EnrollStaffMosque")
-                        .HasForeignKey("MosqueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MosqueId");
 
                     b.HasOne("BusinessLayer.Model.OfficeStaff", "OfficeStaff")
                         .WithMany("EnrollStaffOff")
@@ -1221,6 +1350,10 @@ namespace DatabaseLayer.Migrations
 
             modelBuilder.Entity("BusinessLayer.Model.Mosque", b =>
                 {
+                    b.Navigation("EnrollMosqDonation");
+
+                    b.Navigation("EnrollMosqExpMast");
+
                     b.Navigation("EnrollStaffMosque");
                 });
 
@@ -1255,6 +1388,8 @@ namespace DatabaseLayer.Migrations
                 {
                     b.Navigation("EnrollDonationOrg");
 
+                    b.Navigation("EnrollExpMasterOrg");
+
                     b.Navigation("EnrollOrgMember");
 
                     b.Navigation("EnrollPropertiesOrg");
@@ -1280,6 +1415,8 @@ namespace DatabaseLayer.Migrations
 
             modelBuilder.Entity("BusinessLayer.Model.PurchaseMaster", b =>
                 {
+                    b.Navigation("PurDetail");
+
                     b.Navigation("PurPaymentMaster");
                 });
 
@@ -1290,6 +1427,11 @@ namespace DatabaseLayer.Migrations
                     b.Navigation("SalaryMasterStaff");
 
                     b.Navigation("WithdrawalStaff");
+                });
+
+            modelBuilder.Entity("BusinessLayer.Model.Vendor", b =>
+                {
+                    b.Navigation("purVendor");
                 });
 #pragma warning restore 612, 618
         }

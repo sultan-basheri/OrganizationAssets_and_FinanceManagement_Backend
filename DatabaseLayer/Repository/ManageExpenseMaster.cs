@@ -53,6 +53,8 @@ namespace DatabaseLayer.Repository
                 var result = await _context.ExpensesMaster.Select(x => new
                 {
                     x.Id,
+                    x.OrganizationId,
+                    x.MosqueId,
                     x.ExpenseCategoryId,
                     x.PaidTo,
                     x.ExpenseAmount,
@@ -79,8 +81,10 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.ExpensesMaster.Select(x => new {
+                var expMaster = await _context.ExpensesMaster.Select(x => new {
                     x.Id,
+                    x.OrganizationId,
+                    x.MosqueId,
                     x.ExpenseCategoryId,
                     x.PaidTo,
                     x.ExpenseAmount,
@@ -91,11 +95,36 @@ namespace DatabaseLayer.Repository
                     x.FinancialYearId,
                     x.CreatedAt
                 }).ToListAsync();
-                if (result == null || !result.Any())
+
+                var expCategory = await _context.ExpenseCategories
+                       .Select(a => new
+                       {
+                           a.Id,
+                           a.Name,
+                       }).ToListAsync();
+                var organizations = await _context.OrganizationMaster
+                       .Select(a => new
+                       {
+                           a.Id,
+                           a.Name,
+                       }).ToListAsync();
+
+                var mosques = await _context.Mosques
+                       .Select(a => new
+                       {
+                           a.Id,
+                           a.Name,
+                           a.Address,
+                           a.OrganizationId,
+                           OrganizationName = a.OrgMosque.Name
+                       }).ToListAsync();
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Fail", "Expense Category List Not Found");
-                }
-                return new ResponseResult("Ok", result);
+                    ExpensesMaster = expMaster,
+                    ExpCategory = expCategory,
+                    Organizations = organizations,
+                    Mosques = mosques
+                });
             }
             catch (Exception exp)
             {
@@ -113,6 +142,9 @@ namespace DatabaseLayer.Repository
                 {
                     return new ResponseResult("Fail", "Expenses Not Found");
                 }
+                result.ExpenseCategoryId = expensesMaster.ExpenseCategoryId;
+                result.MosqueId = expensesMaster.MosqueId;
+                result.OrganizationId= expensesMaster.OrganizationId;
                 result.PaidTo = expensesMaster.PaidTo;
                 result.ExpenseAmount = expensesMaster.ExpenseAmount;
                 result.Remark = expensesMaster.Remark;

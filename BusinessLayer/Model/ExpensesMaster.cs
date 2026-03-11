@@ -13,9 +13,15 @@ namespace BusinessLayer.Model
         [Key]
         public int Id { get; set; }   // PK
 
+        public virtual Organization? Organization { get; set; }
+
+        public int OrganizationId { get; set; }
         public virtual ExpenseCategory? ExpenseCategory { get; set; }
 
-        public int ExpenseCategoryId { get; set; }   // FK → ExpenseCategory
+        public int ExpenseCategoryId { get; set; }
+        public virtual Mosque? Mosque { get; set; }
+
+        public int MosqueId { get; set; } 
 
         [Required(ErrorMessage = "Paid To is required")]
         public string PaidTo { get; set; } = string.Empty;

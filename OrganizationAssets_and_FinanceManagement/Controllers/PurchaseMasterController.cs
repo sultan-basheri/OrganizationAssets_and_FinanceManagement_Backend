@@ -171,7 +171,7 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 }
 
                 // ✅ 3. Update Database first (Safe approach)
-                var result = await _purchaseMaster.updatePurchaseDetail(Id, purchaseMaster);
+                var result = await _purchaseMaster.updatePurchase(Id, purchaseMaster);
 
                 if (result.Status.ToLower() == "ok")
                 {

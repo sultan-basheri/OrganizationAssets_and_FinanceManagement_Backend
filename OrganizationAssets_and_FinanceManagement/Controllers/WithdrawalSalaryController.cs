@@ -70,7 +70,7 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> updateWithdrawalSalary(int Id, WithdrawalSalary withdrawal)
+        public async Task<IActionResult> updateWithdrawalSalary(int Id,[FromBody] WithdrawalSalary withdrawal)
         {
             try
             {

@@ -11,6 +11,7 @@ namespace BusinessLayer.Model
         {
             EnrollStaffMosque = new HashSet<Staff>();
             EnrollMosqDonation= new HashSet<Donation>();
+            EnrollMosqExpMast = new HashSet<ExpensesMaster>();
         }
         public int Id { get; set; }
 
@@ -43,5 +44,6 @@ namespace BusinessLayer.Model
         public string MosqueType { get; set; } = string.Empty;
         public ICollection<Staff> EnrollStaffMosque { get; set; }
         public ICollection<Donation> EnrollMosqDonation { get; set; }
+        public ICollection<ExpensesMaster> EnrollMosqExpMast { get; set; }
     }
 }

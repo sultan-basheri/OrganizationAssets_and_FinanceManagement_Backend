@@ -7,19 +7,19 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SalaryMasterController : ControllerBase
+    public class PurchaseDetailController : ControllerBase
     {
-        private readonly ISalaryMaster _salaryMaster;
-        public SalaryMasterController(ISalaryMaster salaryMaster)
+        private readonly IPurchaseDetail _purchaseDetail;
+        public PurchaseDetailController(IPurchaseDetail purchaseDetail)
         {
-            _salaryMaster = salaryMaster;
+            _purchaseDetail = purchaseDetail;
         }
         [HttpGet]
-        public async Task<IActionResult> getSalaryMasterList()
+        public async Task<IActionResult> getPurchaseDetailList()
         {
             try
             {
-                var result = await _salaryMaster.getSalaryMasterList();
+                var result = await _purchaseDetail.getPurchaseDetailList();
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
@@ -32,11 +32,11 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
             }
         }
         [HttpGet("{Id:int}")]
-        public async Task<IActionResult> getSalayMasterById(int Id)
+        public async Task<IActionResult> GetPurchaseDetailById(int Id)
         {
             try
             {
-                var result = await _salaryMaster.getSalaryMasterById(Id);
+                var result = await _purchaseDetail.getPurchaseDetailById(Id);
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
@@ -48,37 +48,40 @@ namespace OrganizationAssets_and_FinanceManagement.Controllers
                 return StatusCode(500, new ResponseResult("Fail", exp.Message));
             }
         }
+
         [HttpPost]
-        public async Task<IActionResult> addSalaryMaster(SalaryMaster salaryMaster)
-        {
+        public async Task<IActionResult> addPurchaseDetail(PurchaseDetail purchaseDetail)
+        { 
             try
             {
-                if(salaryMaster ==  null)
+                if (purchaseDetail == null)
                 {
-                    return BadRequest("Please Fill All Details");
+                    return BadRequest(new { Status = "Fail", Result = "Model is Empty" });
                 }
-                var result = await _salaryMaster.addSalaryMaster(salaryMaster);
+
+               var result = await _purchaseDetail.addPurchaseDetail(purchaseDetail);
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);
                 }
                 return BadRequest(result);
+
             }
             catch (Exception exp)
             {
-                return StatusCode(500, new ResponseResult("Fail", exp.Message));
+                return StatusCode(500, new { Status = "Fail", Result = exp.Message });
             }
         }
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> updateSalaryMaster(int Id,[FromBody] SalaryMaster salaryMaster)
+        public async Task<IActionResult> updatePurchasedetail(int Id, PurchaseDetail purchaseDetail)
         {
             try
             {
-                if (Id != salaryMaster.Id)
+                if (Id != purchaseDetail.Id)
                 {
-                    return BadRequest("Salary Id Mismatch");
+                    return BadRequest("Id Mismatch");
                 }
-                var result = await _salaryMaster.updateSalaryMaster(Id, salaryMaster);
+                var result = await _purchaseDetail.updatePurchaseDetail(Id, purchaseDetail);
                 if (result.Status.ToLower() == "ok")
                 {
                     return Ok(result);

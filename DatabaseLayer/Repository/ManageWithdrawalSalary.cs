@@ -88,7 +88,7 @@ namespace DatabaseLayer.Repository
         {
             try
             {
-                var result = await _context.WithdrawalSalaries.Select(x => new {
+                var withdrawsalary = await _context.WithdrawalSalaries.Select(x => new {
                     x.Id,
                     x.StaffId,
                     x.WithdrawalAmount,
@@ -100,11 +100,30 @@ namespace DatabaseLayer.Repository
                     x.FinancialYearId,
                     x.CreatedAt
                 }).ToListAsync();
-                if (result == null || !result.Any())
+                var staff = await _context.Staffs
+                         .Select(a => new
+                         {
+                             a.Id,
+                             a.FullName,
+                             a.MosqueId,
+                             a.OrganizationId,
+                             OrganizationName = a.Organization.Name,
+                             MosqueName = a.Mosque.Name
+
+                         }).ToListAsync();
+                var organizations = await _context.OrganizationMaster
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.Name,
+                        }).ToListAsync();
+
+                return new ResponseResult("Ok", new
                 {
-                    return new ResponseResult("Fail", "Salary List Not Found");
-                }
-                return new ResponseResult("Ok", result);
+                    WithdrawSalary = withdrawsalary,
+                    Staff = staff,
+                    Organizations = organizations,
+                });
             }
             catch (Exception exp)
             {

@@ -143,29 +143,37 @@ namespace DatabaseLayer.Repository
                     x.FinancialYearId,
                     x.CreatedAt,
                     PaidAmount = x.PurPaymentMaster.Sum(p => p.Amount),
-                }).ToListAsync();
+                    PurDetail = x.PurDetail.Select(d => new {
+                        d.Name,
+                        d.Quantity
+                    }).ToList(),
+                    PurPaymentMaster = x.PurPaymentMaster.Select(p => new {
+                        p.PaymentDate
+                    }).ToList()
+
+                }).OrderByDescending(x => x.Id).ToListAsync(); 
 
                 var organizations = await _context.OrganizationMaster
-                       .Select(a => new
-                       {
-                           a.Id,
-                           a.Name,
-                       }).ToListAsync();
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.Name,
+                        }).ToListAsync();
 
                 var vendor = await _context.Vendor
-                       .Select(a => new
-                       {
-                           a.Id,
-                           a.BusinessName,
-                           a.ContactPerson,
-                           a.ContactNo,
-                           a.Email,
-                           a.Address,
-                           a.GstIn
-                       }).ToListAsync();
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.BusinessName,
+                            a.ContactPerson,
+                            a.ContactNo,
+                            a.Email,
+                            a.Address,
+                            a.GstIn
+                        }).ToListAsync();
+
                 return new ResponseResult("Ok", new
                 {
-                    
                     Organizations = organizations,
                     PurMaster = purmaster,
                     Vendor = vendor
@@ -176,7 +184,6 @@ namespace DatabaseLayer.Repository
                 return new ResponseResult("Fail", exp.Message);
             }
         }
-
         public async Task<ResponseResult> updatePurchase(int Id, PurchaseMaster purchaseMaster)
         {
             try

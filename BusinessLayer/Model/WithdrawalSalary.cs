@@ -29,7 +29,7 @@ namespace BusinessLayer.Model
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
    
-        public int OfficeStaffId { get; set; }   // FK → OfficeStaff
+        public int OfficeStaffId { get; set; }  
 
         public virtual FinancialYear? FinancialYear { get; set; }
         public int FinancialYearId { get; set; }   // FK → FinancialYear

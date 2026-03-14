@@ -26,28 +26,12 @@ namespace BusinessLayer.Model
         }
         [Key]
         public int Id { get; set; }
-
-        [Required(ErrorMessage = "Full name is required")]
         public string FullName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Contact number is required")]
-        [Phone(ErrorMessage = "Invalid Contact number")]
-        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Contact number must be 10 digits")]
         public string ContactNo { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Address is required")]
         public string Address { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Date of joining is required")]
         public DateTime DateOfJoining { get; set; }
-
-        [Required(ErrorMessage = "Gender is required")]
         public string Gender { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Salary is required")]
         public decimal Salary { get; set; }
         public string? Password { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;

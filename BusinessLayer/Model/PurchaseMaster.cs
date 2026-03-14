@@ -28,16 +28,12 @@ namespace BusinessLayer.Model
         public string GSTType { get; set; } = string.Empty;
         // Example: CGST+SGST, IGST
 
-        [Required]
         public decimal GSTPercentage { get; set; }
 
-        [Required]
         public decimal GSTAmount { get; set; }
 
-        [Required]
         public decimal TotalAmount { get; set; }
 
-        [Required]
         public DateOnly BillDate { get; set; }
 
         [NotMapped]
@@ -48,7 +44,6 @@ namespace BusinessLayer.Model
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public virtual Organization? Organization { get; set; }
-        [Required]
         public int OrganizationId { get; set; }
 
         public virtual OfficeStaff? OfficeStaff { get; set; }

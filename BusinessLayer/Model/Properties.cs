@@ -16,28 +16,15 @@ namespace BusinessLayer.Model
         }
         [Key]
         public int Id { get; set; }   // PK
-
-
         public virtual Organization? Organization { get; set; }
         public int OrganizationId { get; set; }   // FK → Organization
-
-        [Required(ErrorMessage = "Property type is required")]
         public string PropertyType { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Owner type is required")]
         public string OwnerType { get; set; } = string.Empty;
         // Example: Owned, Rented, Leased
-
-        [Required(ErrorMessage = "Registration number is required")]
         public string RegNo { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Address is required")]
         public string Address { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Measurement is required")]
         public string Measurement { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Measurement unit is required")]
         public string MeasurementUnit { get; set; } = string.Empty;
         // Example: SqFt, SqM, Acre
 
@@ -50,7 +37,6 @@ namespace BusinessLayer.Model
         public string? DocUrl { get; set; }
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
-        [Required]
         public int OfficeStaffId { get; set; }   // FK → OfficeStaff
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

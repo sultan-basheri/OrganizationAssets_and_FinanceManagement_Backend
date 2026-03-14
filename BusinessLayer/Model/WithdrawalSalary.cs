@@ -16,19 +16,13 @@ namespace BusinessLayer.Model
         public virtual Staff? Staff { get; set; }
         
         public int StaffId { get; set; }   // FK → Staff
-
-        [Required(ErrorMessage = "Withdrawal amount is required")]
         public decimal WithdrawalAmount { get; set; }
 
         public string? Remark { get; set; }
-
-        [Required(ErrorMessage = "Payment type is required")]
         public string PaymentType { get; set; } = string.Empty;
         // Example: Cash, Bank, UPI
 
         public string? Reference { get; set; }   // Txn / Cheque / Ref No
-
-        [Required]
         public DateOnly PaymentDate { get; set; }
        
         public DateTime CreatedAt { get; set; } = DateTime.Now;

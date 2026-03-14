@@ -25,15 +25,10 @@ namespace BusinessLayer.Model
         public int? StaffId { get; set; }   
 
         public string? DonorThrough { get; set; }   
-
-        [Required(ErrorMessage = "Donation amount is required")]
         public decimal Amount { get; set; }
-
-        [Required(ErrorMessage = "Donation type is required")]
         public string DonationType { get; set; } = string.Empty;
         // Example: Zakat, Sadaqah, Donation
 
-        [Required(ErrorMessage = "Payment type is required")]
         public string PaymentType { get; set; } = string.Empty;
         // Example: Cash, UPI, Bank Transfer
 

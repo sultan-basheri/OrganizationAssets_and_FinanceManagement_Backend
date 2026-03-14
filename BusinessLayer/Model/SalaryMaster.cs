@@ -14,15 +14,10 @@ namespace BusinessLayer.Model
         public int Id { get; set; }   // PK
 
         public virtual Staff? Staff { get; set; }
-        [Required]
         public int StaffId { get; set; }   // FK → Staff
-
-        [Required(ErrorMessage = "Salary amount is required")]
         public decimal SalaryAmount { get; set; }
 
         public string? Description { get; set; }
-
-        [Required]
         public DateOnly GeneratedDate { get; set; }
 
         public virtual Organization? Organization { get; set; }

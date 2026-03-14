@@ -9,15 +9,9 @@ namespace BusinessLayer.Model
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Full Name is required")]
         public string FullName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Contact number is required")]
-        [Phone(ErrorMessage = "Invalid contact number")]
-        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Contact number must be 10 digits")]
         public string ContactNo { get; set; } = string.Empty;
-        [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public string Status { get; set; } = string.Empty;

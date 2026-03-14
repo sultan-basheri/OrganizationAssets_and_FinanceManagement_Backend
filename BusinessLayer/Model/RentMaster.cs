@@ -16,19 +16,13 @@ namespace BusinessLayer.Model
         public virtual PropertyRentAgreement? PRAgreement { get; set; }
 
         public int PropertyRentAgreementId { get; set; }   // FK → RentAgreement
-
-        [Required]
         public decimal RentAmount { get; set; }
-
-        [Required(ErrorMessage = "Payment type is required")]
         public string PaymentType { get; set; } = string.Empty;
         // Example: Cash, UPI, Bank Transfer
 
         public string? Reference { get; set; }
         public DateOnly DateFrom { get; set; }
         public DateOnly DateTo { get; set; }
-
-        [Required]
         public DateOnly PaymentDate { get; set; } 
 
         public string? Remark { get; set; }

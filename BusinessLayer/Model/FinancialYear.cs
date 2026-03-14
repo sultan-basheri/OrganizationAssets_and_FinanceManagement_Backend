@@ -22,13 +22,10 @@ namespace BusinessLayer.Model
         [Key]
         public int Id { get; set; }  
 
-        [Required]
         public DateOnly DateFrom { get; set; }   
 
-        [Required]
         public DateOnly DateTo { get; set; }  
 
-        [Required]
         public string YearName { get; set; } = string.Empty;
 
         public virtual OfficeStaff? OfficeStaff { get; set; }

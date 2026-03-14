@@ -15,11 +15,7 @@ namespace BusinessLayer.Model
 
         public virtual PurchaseMaster? PurchaseMaster { get; set; }
         public int PurchaseMasterId { get; set; }  
-
-        [Required(ErrorMessage = "Payment amount is required")]
         public decimal Amount { get; set; }
-
-        [Required(ErrorMessage = "Payment type is required")]
         public string PaymentType { get; set; } = string.Empty;
         // Example: Cash, Bank, UPI
 

@@ -22,19 +22,14 @@ namespace BusinessLayer.Model
         public virtual Mosque? Mosque { get; set; }
 
         public int MosqueId { get; set; } 
-
-        [Required(ErrorMessage = "Paid To is required")]
         public string PaidTo { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Expense amount is required")]
         public decimal ExpenseAmount { get; set; }
 
         public string? Remark { get; set; }
 
-        [Required(ErrorMessage = "Payment type is required")]
         public string PaymentType { get; set; } = string.Empty;
         // Example: Cash, Bank, UPI
-
         public string? Reference { get; set; }
 
         public virtual OfficeStaff? OfficeStaff { get; set; }
